@@ -1,0 +1,278 @@
+---
+title: 'How to build OpenCursor from source code'
+description: 'Compile OpenCursor locally for development or production. Covers prerequisites, fast and watch builds, and platform output paths on macOS, Windows, and Linux.'
+---
+
+OpenCursor is a VS Code fork with built-in AI features. Building from source gives you a fully functional editor you can modify, debug, and run locally. This page walks you through every step — from installing prerequisites to launching the compiled application.
+
+## Prerequisites
+
+Before you start, install the following tools on your system:
+
+| Requirement | Version | Check command |
+|---|---|---|
+| Node.js | 18.x or higher | `node --version` |
+| npm | 9.x or higher | `npm --version` |
+| Git | 2.x or higher | `git --version` |
+| Python | 3.8 or higher | `python --version` |
+| yarn (optional) | 1.22+ | `yarn --version` |
+
+You also need a C/C++ compiler toolchain. The setup varies by platform:
+
+<Tabs>
+  <Tab title="macOS">
+    Install Xcode Command Line Tools:
+
+    ```bash
+    xcode-select --install
+    ```
+
+    <Warning>
+      macOS users cannot run the AI submodule extension in a self-built release build due to notarization requirements. For extension development on macOS, use the pre-built dev version available at the [OpenCursor dev builds Google Drive folder](https://drive.google.com/drive/u/0/folders/13Tnz9cL7AAUuB_eyc5n-4wJQmhN3mPWt).
+    </Warning>
+  </Tab>
+  <Tab title="Linux">
+    Install the build-essential package:
+
+    ```bash
+    sudo apt-get install build-essential
+    ```
+  </Tab>
+  <Tab title="Windows">
+    Install **Visual Studio Build Tools** via the Visual Studio Installer and select the following components:
+
+    - **Desktop development with C++** (workload)
+    - **C++ MFC for v143 build tools with Spectre Mitigations** (individual component)
+    - **MSVC v143 - VS 2022 C++ x64/x86 Spectre-mitigated libs** (individual component)
+  </Tab>
+</Tabs>
+
+## Quick start
+
+The fastest way to get a working development build running:
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/riftsh/Opencursor.git
+    cd Opencursor
+    ```
+  </Step>
+  <Step title="Initialize submodules">
+    The AI extension lives in a Git submodule. Initialize it before installing dependencies:
+
+    ```bash
+    git submodule update --init --recursive
+    ```
+  </Step>
+  <Step title="Install dependencies">
+    ```bash
+    npm install
+    ```
+  </Step>
+  <Step title="Compile the editor">
+    ```bash
+    npm run compile-fast
+    ```
+
+    This takes approximately 2–5 minutes and skips minification for faster iteration.
+  </Step>
+  <Step title="Launch OpenCursor">
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```bash
+        ./scripts/code.sh
+        ```
+      </Tab>
+      <Tab title="Windows (first run)">
+        ```bat
+        .\scripts\code.bat
+        ```
+
+        <Note>
+          Run `code.bat` on the first launch to create the required symlinks. On subsequent runs you can use `./scripts/code.sh` through Git Bash instead.
+        </Note>
+      </Tab>
+    </Tabs>
+  </Step>
+</Steps>
+
+## Build modes
+
+Choose the right build mode for your workflow:
+
+<Columns cols={2}>
+  <Card title="Fast build" icon="bolt">
+    Best for active development. Skips minification and optimizations.
+
+    ```bash
+    npm run compile-fast
+    ```
+
+    **Time:** ~2–5 minutes
+  </Card>
+  <Card title="Watch mode" icon="eye">
+    Automatically rebuilds whenever source files change. Keep this running in a terminal while you work.
+
+    ```bash
+    npm run watch
+    ```
+  </Card>
+  <Card title="Full build" icon="hammer">
+    Complete build with all optimizations disabled, useful for pre-release testing.
+
+    ```bash
+    npm run compile
+    ```
+
+    **Time:** ~5–10 minutes
+  </Card>
+  <Card title="Production build" icon="box">
+    Optimized, minified output ready for distribution.
+
+    ```bash
+    npm run compile && npm run compile-build
+    ```
+
+    **Time:** ~15–30 minutes
+  </Card>
+</Columns>
+
+<Tip>
+  Use `npm run watch-client` when you are only changing CSS or UI themes — it rebuilds only the client layer and is the fastest possible feedback loop.
+</Tip>
+
+### Watch mode granularity
+
+You can narrow watch mode to a single layer to reduce CPU usage:
+
+```bash
+# Watch everything (main editor + extensions)
+npm run watch
+
+# Watch only the main editor client
+npm run watch-client
+
+# Watch only extensions
+npm run watch-extensions
+```
+
+## Production builds
+
+A production build runs the full compile pipeline, minifies output, and packages the application for your platform.
+
+```bash
+# Step 1: Clean install
+rm -rf node_modules out
+npm install
+
+# Step 2: Full compile
+npm run compile
+
+# Step 3: Minify
+npm run minify-vscode
+
+# Step 4: Package
+npm run compile-build
+```
+
+### Platform output locations
+
+After `npm run compile-build` completes, find your packaged application here:
+
+<Tabs>
+  <Tab title="macOS">
+    ```
+    out/OpenCursor-darwin-x64/OpenCursor.app
+    ```
+  </Tab>
+  <Tab title="Windows">
+    ```
+    out/OpenCursor-win32-x64/OpenCursor.exe
+    ```
+  </Tab>
+  <Tab title="Linux">
+    ```
+    out/OpenCursor-linux-x64/opencursor
+    ```
+  </Tab>
+</Tabs>
+
+## Extension development
+
+The OpenCursor AI extension lives in `opencursor-submodule-beta/`. You can build and iterate on it independently from the main editor.
+
+### Build the extension
+
+```bash
+cd opencursor-submodule-beta
+
+# Install dependencies
+npm install
+
+# Build the extension
+cd extensions/vscode
+npm run compile
+```
+
+To watch for changes while developing the extension:
+
+```bash
+cd opencursor-submodule-beta/extensions/vscode
+npm run watch
+```
+
+After making changes, reload the editor window to pick them up:
+
+- Open the command palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
+- Run **Developer: Reload Window**
+
+### Link the extension via VSIX
+
+```bash
+# Package the extension
+cd opencursor-submodule-beta/extensions/vscode
+npx vsce package
+```
+
+Then install the generated `.vsix` file in OpenCursor:
+
+1. Open the Extensions panel (`Cmd+Shift+X` / `Ctrl+Shift+X`)
+2. Click **...** → **Install from VSIX...**
+3. Select the `.vsix` file
+
+## Build performance reference
+
+| Scenario | Command | Approximate time |
+|---|---|---|
+| Quick test | `npm run compile-fast` | ~2–3 min |
+| Full dev build | `npm run compile` | ~5–8 min |
+| Production build | `npm run compile && npm run compile-build` | ~15–25 min |
+| Active development | `npm run watch` | Ongoing |
+
+### Tips to speed up builds
+
+1. Use `compile-fast` during development — it skips minification entirely.
+2. Keep `watch` mode running to avoid triggering full rebuilds manually.
+3. Build on an SSD — the pipeline performs a large number of file operations.
+4. Increase Node.js memory to reduce garbage collection pauses: `export NODE_OPTIONS="--max-old-space-size=8192"`.
+5. Close memory-intensive applications — compilation is CPU and memory intensive.
+
+## Rebuilding after changes
+
+| What changed | Command |
+|---|---|
+| Main editor source | `npm run compile-fast` or `npm run watch` |
+| Extension source | `cd opencursor-submodule-beta/extensions/vscode && npm run compile` |
+| CSS or theme files | `npm run watch-client` |
+
+## Next steps
+
+<Columns cols={2}>
+  <Card title="Troubleshoot build errors" icon="wrench" href="/development/build-troubleshooting">
+    Fix common build failures with exact error messages and commands.
+  </Card>
+  <Card title="Contributing guide" icon="code-pull-request" href="/development/contributing">
+    Learn the workflow for submitting issues and pull requests.
+  </Card>
+</Columns>

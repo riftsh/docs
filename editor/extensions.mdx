@@ -1,0 +1,126 @@
+---
+title: "How to install and manage extensions in OpenCursor"
+description: "Install extensions in OpenCursor via Open VSX, manage the pre-bundled AI and editor extensions, and install .vsix files manually for custom tooling."
+---
+
+OpenCursor supports the VS Code extension API, which means most community extensions work without modification. Instead of the Microsoft Visual Studio Marketplace, OpenCursor connects to the [Open VSX Registry](https://open-vsx.org) — an open, vendor-neutral extension registry with thousands of compatible extensions.
+
+## Installing extensions from Open VSX
+
+<Steps>
+  <Step title="Open the Extensions panel">
+    Press `Cmd+Shift+X` (macOS) or `Ctrl+Shift+X` (Windows/Linux) to open the Extensions panel. You can also click the Extensions icon in the Activity Bar on the left.
+  </Step>
+  <Step title="Search for an extension">
+    Type the extension name or keyword into the search box at the top of the panel. Results are fetched from `open-vsx.org` as configured in `product.json`.
+  </Step>
+  <Step title="Install">
+    Click **Install** next to the extension you want. OpenCursor downloads and activates it automatically. A window reload may be required for some extensions.
+  </Step>
+</Steps>
+
+<Note>
+  OpenCursor's extension gallery is configured in `product.json` to use `https://open-vsx.org/vscode/gallery` as its service URL. This replaces the Microsoft Marketplace endpoint used in standard VS Code builds.
+</Note>
+
+## Pre-bundled OpenCursor extensions
+
+OpenCursor ships with a set of purpose-built extensions that provide its AI and enhanced editor features. These are installed and active by default.
+
+### AI extensions
+
+<CardGroup cols={2}>
+  <Card title="opencursor-agent" icon="robot">
+    The core AI agent. Provides the AI chat panel, tool use, autonomous coding, and the `LLMClient.ts` integration for OpenAI, Anthropic, Gemini, and Ollama.
+  </Card>
+  <Card title="opencursor-composer" icon="pen-to-square">
+    Multi-file editing workflows. Lets the AI agent read and write across multiple files in a single session.
+  </Card>
+  <Card title="opencursor-multiagent" icon="users">
+    Runs three specialised AI agents in parallel: Coder, Architect, and Debug agents. Used for complex multi-step tasks.
+  </Card>
+  <Card title="opencursor-snippets" icon="puzzle-piece">
+    AI-aware snippet manager. Stores and surfaces code snippets with context from your current file.
+  </Card>
+</CardGroup>
+
+### Editor extensions
+
+<CardGroup cols={2}>
+  <Card title="opencursor-vim" icon="keyboard">
+    Full Vim emulation powered by `VimEngine.ts`. Provides normal, insert, visual, and command modes with the standard Vim keybinding set.
+  </Card>
+  <Card title="opencursor-editor" icon="code">
+    Enhanced editing features including snippet support (`SnippetsEngine.ts`), Emmet abbreviations (`EmmetEngine.ts`), code folding (`FoldingEngine.ts`), hover providers, multi-cursor, and diff view (`DiffEngine.ts`).
+  </Card>
+  <Card title="opencursor-visual" icon="eye">
+    Visual enhancements: indent rainbow (`IndentRainbow.ts`), bracket pair colorization (`BracketColorizer.ts`), and minimap customisation (`Minimap.ts`).
+  </Card>
+  <Card title="opencursor-navigation" icon="compass">
+    Go to definition, go to references, symbol outline, and workspace symbol search, all powered by `NavigationEngine`.
+  </Card>
+</CardGroup>
+
+### IDE extensions
+
+<CardGroup cols={2}>
+  <Card title="opencursor-git" icon="code-branch">
+    Enhanced Git integration via `GitIntegration.ts`. Adds inline blame, commit graph, branch visualisation, stash management, cherry-pick, rebase, merge UI, and conflict resolution (`MergeConflict.ts`).
+  </Card>
+  <Card title="opencursor-terminal" icon="terminal">
+    Terminal management via `TerminalManager.ts`. Provides multiple terminal tabs, split view, named profiles, custom shell support, and clickable links in terminal output.
+  </Card>
+  <Card title="opencursor-debug" icon="bug">
+    Debugging enhancements built on `DebugEngine.ts`. Adds conditional breakpoints, logpoints, hit-count and data breakpoints, watch expressions, call stack navigation, and variable inspection.
+  </Card>
+  <Card title="opencursor-project" icon="folder-open">
+    Project management via `ProjectManager.ts`. Provides a project switcher, recent projects list, workspace templates, and project scaffolding.
+  </Card>
+  <Card title="opencursor-themes" icon="palette">
+    Theme management via `ThemeManager.ts`. Includes custom file icons, folder icons, and file association overrides.
+  </Card>
+</CardGroup>
+
+## Installing a .vsix file manually
+
+If an extension is not available on Open VSX, you can install it from a `.vsix` package file directly.
+
+<Steps>
+  <Step title="Obtain the .vsix file">
+    Download the `.vsix` file from the extension author's GitHub releases or other distribution source.
+  </Step>
+  <Step title="Open the Extensions panel">
+    Press `Cmd+Shift+X` / `Ctrl+Shift+X`.
+  </Step>
+  <Step title="Install from VSIX">
+    Click the **...** (More Actions) menu at the top-right of the Extensions panel and select **Install from VSIX...**
+  </Step>
+  <Step title="Select the file">
+    Navigate to your `.vsix` file and confirm. OpenCursor installs the extension and may prompt you to reload the window.
+  </Step>
+</Steps>
+
+## Microsoft-proprietary extensions
+
+<Warning>
+  Some Microsoft-published extensions are not compatible with OpenCursor because they are licensed exclusively for use with the official Microsoft VS Code binary or depend on proprietary Microsoft APIs. This includes extensions such as **GitHub Copilot** (though OpenCursor has its own built-in AI) and certain Microsoft-internal language service extensions. If an extension fails to install or activate, check whether it is available on [Open VSX](https://open-vsx.org) as an alternative.
+</Warning>
+
+Most widely used community extensions — language servers, linters, formatters, themes, and keymaps — are available on Open VSX and install without issues. The `product.json` includes extension recommendations for popular languages and tools (Python, Go, Rust, Java, C++, and more) that are all sourced from Open VSX-compatible publishers.
+
+## Managing installed extensions
+
+<AccordionGroup>
+  <Accordion title="Disable or uninstall an extension">
+    In the Extensions panel, click on the installed extension and select **Disable** to turn it off without removing it, or **Uninstall** to remove it completely. Disabling is useful for troubleshooting conflicts.
+  </Accordion>
+  <Accordion title="Extension settings">
+    Most extensions expose configuration via the Settings editor. Press `Cmd+,` / `Ctrl+,`, then search by the extension name to find and modify its settings.
+  </Accordion>
+  <Accordion title="Viewing extension commands">
+    Open the command palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and type the extension name to see all commands it contributes.
+  </Accordion>
+  <Accordion title="Keymap extensions">
+    OpenCursor recognises keymap extensions for Sublime Text, Atom, Brackets, Notepad++, IntelliJ IDEA, Emacs, Eclipse, Delphi, and Vim (via `vscodevim.vim`). These are listed in `product.json` under `keymapExtensionTips` and are suggested when OpenCursor detects a matching editor's project files.
+  </Accordion>
+</AccordionGroup>

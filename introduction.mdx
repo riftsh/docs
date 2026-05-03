@@ -1,0 +1,82 @@
+---
+title: "OpenCursor: open-source AI code editor with BYOK"
+description: "Learn what OpenCursor is, how it differs from Cursor and GitHub Copilot, and which AI providers it supports — OpenAI, Anthropic, Gemini, and Ollama."
+---
+
+OpenCursor is a VS Code fork with AI coding features built in. Unlike Cursor or GitHub Copilot, it does not require a subscription: you supply your own API keys for OpenAI, Anthropic, or Gemini, or run models entirely offline with Ollama. The project is free and open source, actively developed, and currently pre-1.0.
+
+<Warning>
+  OpenCursor is pre-1.0. APIs and the UX are still evolving. Around 120 of the planned 300 features are implemented. Check the [roadmap](/development/roadmap) before relying on any specific feature in production.
+</Warning>
+
+## What makes OpenCursor different
+
+Most AI editors tie you to one provider and charge a monthly fee. OpenCursor's BYOK (Bring Your Own Key) model means your API spend goes directly to the model provider at their published rates — no markup, no seats, no subscription.
+
+| | OpenCursor | Cursor | GitHub Copilot |
+|---|---|---|---|
+| Subscription required | No | Yes | Yes |
+| Bring your own keys | Yes | Limited | No |
+| Local/offline models | Yes (Ollama) | No | No |
+| Open source | Yes (Apache 2.0) | No | No |
+| VS Code compatible | Yes | Yes | Yes |
+
+## Supported AI providers
+
+OpenCursor's `LLMClient` supports four provider families out of the box:
+
+- **OpenAI** — GPT-4, GPT-3.5, and compatible endpoints
+- **Anthropic** — Claude 3 (Haiku, Sonnet, Opus) and later releases
+- **Google Gemini** — Gemini Pro and later releases
+- **Ollama** — any model running locally via Ollama (fully offline)
+
+You can switch providers at any time from **Settings → OpenCursor: AI Configuration**. See [API keys](/configuration/api-keys) and [model configuration](/configuration/models) for setup details.
+
+## Feature overview
+
+<CardGroup cols={2}>
+  <Card title="AI chat" icon="message" href="/ai-features/ai-chat">
+    Open a persistent chat panel with Cmd+L / Ctrl+L to ask questions, get explanations, or request changes across your codebase.
+  </Card>
+  <Card title="Inline editing" icon="pen-to-square" href="/ai-features/autocomplete">
+    Press Cmd+I / Ctrl+I anywhere in the editor to invoke inline AI editing without leaving your current file.
+  </Card>
+  <Card title="Autonomous agents" icon="robot" href="/ai-features/agents">
+    Three specialized agents — Coder, Architect, and Debug — can plan and execute multi-step coding tasks with tool use.
+  </Card>
+  <Card title="Code intelligence" icon="brain" href="/ai-features/code-intelligence">
+    AI-powered code review, bug fixing, test generation, refactoring, and documentation generation.
+  </Card>
+  <Card title="Tab autocomplete" icon="wand-magic-sparkles" href="/ai-features/autocomplete">
+    Context-aware multi-line completions that appear inline as you type, powered by the model of your choice.
+  </Card>
+  <Card title="Editor and configuration" icon="sliders" href="/editor/overview">
+    Vim mode, multi-cursor editing, bracket colorization, Git integration, integrated terminal, and more.
+  </Card>
+</CardGroup>
+
+## Project structure
+
+OpenCursor is made up of two main parts:
+
+- **Editor shell** — the VS Code fork in the root of the repository
+- **AI extension** — lives in `extensions/opencursor-submodule/`, forked from Continue.dev, and provides all AI features through the `LLMClient`, `AutocompleteProvider`, `Agent`, and related modules
+
+Most VS Code extensions work in OpenCursor. Extensions that depend on Microsoft-proprietary APIs (such as some Marketplace-exclusive extensions) will not. Use [Open VSX](https://open-vsx.org/) as an alternative source for those.
+
+## License
+
+The OpenCursor project README declares the license as **Apache 2.0**. The `product.json` configuration file references an **MIT** license pointing to the upstream VS Code license file. If license terms matter for your use case, review both the [repository LICENSE file](https://github.com/riftsh/Opencursor/blob/main/LICENSE.txt) and the README.
+
+## Current status
+
+OpenCursor is in active development, targeting v1.0.1 for Q2 2026. Known issues tracked in the roadmap include an intermittent AI chat panel initialization failure on macOS, a memory leak with Ollama, and API keys currently stored without encryption (see the [roadmap](/development/roadmap) security note before storing production keys).
+
+<CardGroup cols={2}>
+  <Card title="Install OpenCursor" icon="download" href="/installation">
+    Download a pre-built release or build from source.
+  </Card>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Configure your API key and make your first AI request in under 5 minutes.
+  </Card>
+</CardGroup>

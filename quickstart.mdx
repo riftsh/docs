@@ -1,0 +1,135 @@
+---
+title: "Go from install to first AI interaction in OpenCursor"
+description: "Configure your AI provider, open the AI chat panel, try inline editing, and enable tab autocomplete in your first OpenCursor session."
+---
+
+This guide takes you from a freshly installed OpenCursor to your first AI-assisted coding interaction. The whole process takes about five minutes. If you haven't installed OpenCursor yet, start with [Installation](/installation).
+
+## Before you start
+
+You need an API key from at least one provider:
+
+- **OpenAI** — [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+- **Anthropic** — [console.anthropic.com](https://console.anthropic.com)
+- **Google Gemini** — [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+- **Ollama (local)** — No key needed. [Install Ollama](https://ollama.com) and pull a model first (`ollama pull llama3`).
+
+<Warning>
+  API keys are currently stored without encryption in this pre-1.0 build. Do not enter production or billing-sensitive keys until the SecretStorage fix ships. See the [roadmap](/development/roadmap) for the current status of that fix.
+</Warning>
+
+<Steps>
+  <Step title="Launch OpenCursor">
+    Start OpenCursor using whichever method matches how you installed it:
+
+    <Tabs>
+      <Tab title="macOS / Linux (source build)">
+        ```bash
+        ./scripts/code.sh
+        ```
+      </Tab>
+      <Tab title="macOS (app bundle)">
+        Open `out/OpenCursor-darwin-x64/OpenCursor.app`, or double-click it in Finder.
+      </Tab>
+      <Tab title="Windows">
+        Run `out\OpenCursor-win32-x64\OpenCursor.exe`, or double-click it in Explorer.
+      </Tab>
+      <Tab title="Linux (binary)">
+        ```bash
+        ./out/OpenCursor-linux-x64/opencursor
+        ```
+      </Tab>
+    </Tabs>
+
+    OpenCursor looks and behaves like VS Code. Open a project folder with **File → Open Folder** before proceeding.
+  </Step>
+
+  <Step title="Add your API key">
+    Open **Settings** with `Cmd+,` (macOS) or `Ctrl+,` (Windows/Linux), then search for **OpenCursor AI**.
+
+    You should see an **OpenCursor: AI Configuration** section. Enter your API key in the field for your chosen provider:
+
+    - **OpenAI API Key** — paste your `sk-...` key
+    - **Anthropic API Key** — paste your `sk-ant-...` key
+    - **Gemini API Key** — paste your `AIza...` key
+    - **Ollama** — set the provider to `ollama` and leave the key field blank
+
+    Save and close Settings. For more advanced configuration — model selection, custom endpoints, fallback models — see [API keys](/configuration/api-keys) and [model configuration](/configuration/models).
+  </Step>
+
+  <Step title="Open the AI chat panel">
+    Press **Cmd+L** (macOS) or **Ctrl+L** (Windows/Linux) to open the AI chat panel in the sidebar.
+
+    Type a question and press **Enter**. For example:
+
+    ```
+    Explain what this file does
+    ```
+
+    The chat panel has access to your open files. You can ask questions about code, request refactors, or ask it to generate new files. The panel maintains conversation context within a session.
+
+    <Tip>
+      You can reference a specific file or selection by mentioning it in your message, or by selecting code before opening the chat.
+    </Tip>
+  </Step>
+
+  <Step title="Try inline editing">
+    Inline editing lets you ask the AI to modify code directly in the editor without switching to the chat panel.
+
+    1. Place your cursor anywhere in a file — or select a block of code you want to change.
+    2. Press **Cmd+I** (macOS) or **Ctrl+I** (Windows/Linux).
+    3. A small input field appears at your cursor. Type an instruction, for example:
+
+    ```
+    Add error handling for null values
+    ```
+
+    4. Press **Enter**. The AI applies the edit inline. Review the change and accept or undo it as needed.
+
+    Inline editing is useful for targeted changes: rewriting a function, adding types, fixing a bug — anything where you want the result applied directly in place.
+  </Step>
+
+  <Step title="Enable tab autocomplete">
+    Tab autocomplete shows multi-line AI-generated code suggestions as you type. Suggestions appear as grey ghost text; press **Tab** to accept one.
+
+    To enable it:
+
+    1. Open **Settings** (`Cmd+,` / `Ctrl+,`).
+    2. Search for **OpenCursor: Autocomplete**.
+    3. Toggle **Enable Tab Autocomplete** on.
+
+    Autocomplete uses the same AI provider and model you configured in step 2. If suggestions are slow or not appearing, confirm your API key is working by running a chat request first.
+
+    <Tip>
+      Autocomplete works best when you have a file open with surrounding context. It reads the current file to generate suggestions that fit your code style and patterns.
+    </Tip>
+  </Step>
+</Steps>
+
+## Keyboard shortcuts reference
+
+| Action | macOS | Windows / Linux |
+|--------|-------|-----------------|
+| Open AI chat | Cmd+L | Ctrl+L |
+| Inline edit | Cmd+I | Ctrl+I |
+| Command palette | Cmd+Shift+P | Ctrl+Shift+P |
+| Open settings | Cmd+, | Ctrl+, |
+| Extensions panel | Cmd+Shift+X | Ctrl+Shift+X |
+| Quick file open | Cmd+P | Ctrl+P |
+
+## What to explore next
+
+<CardGroup cols={2}>
+  <Card title="AI chat" icon="message" href="/ai-features/ai-chat">
+    Learn how to use the chat panel for codebase-wide questions and multi-turn conversations.
+  </Card>
+  <Card title="Autonomous agents" icon="robot" href="/ai-features/agents">
+    Use the Coder, Architect, and Debug agents to plan and execute larger coding tasks.
+  </Card>
+  <Card title="API keys and models" icon="key" href="/configuration/api-keys">
+    Configure multiple providers, set a default model, and add custom endpoints.
+  </Card>
+  <Card title="Code intelligence" icon="brain" href="/ai-features/code-intelligence">
+    Generate tests, fix bugs, document code, and run AI code reviews from the editor.
+  </Card>
+</CardGroup>

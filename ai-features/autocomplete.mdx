@@ -1,0 +1,130 @@
+---
+title: 'AI-powered tab autocomplete in OpenCursor'
+description: 'Context-aware, multi-line code completions powered by AutocompleteProvider. Accept suggestions with Tab as you type, with full LLM context.'
+---
+
+OpenCursor's autocomplete feature predicts what you are about to type and renders the suggestion as ghost text inline in the editor. Unlike simple snippet-based completion, `AutocompleteProvider` sends surrounding code context to the configured LLM, enabling multi-line suggestions that understand the intent of the code around the cursor.
+
+## How it works
+
+When you pause while typing, `AutocompleteProvider` gathers context from:
+
+- The current file's content above and below the cursor
+- Open files in the editor (for cross-file context)
+- The language and file type
+
+This context is forwarded to the active model via `LLMClient.ts`, and the response is rendered as dimmed ghost text at the cursor position.
+
+## Accepting and dismissing suggestions
+
+<Columns cols={2}>
+  <Card title="Accept full suggestion" icon="arrow-right">
+    Press `Tab` to accept the entire ghost-text suggestion and insert it at the cursor.
+  </Card>
+  <Card title="Dismiss suggestion" icon="x">
+    Press `Escape` to dismiss the current suggestion without inserting anything.
+  </Card>
+</Columns>
+
+<Tip>
+If a suggestion spans multiple lines, pressing `Tab` inserts all lines at once. You can then edit the inserted block normally.
+</Tip>
+
+## Multi-line completions
+
+`AutocompleteProvider` supports multi-line code completion out of the box. When the model infers that a full function body, block, or statement group is needed, it returns multiple lines in a single suggestion.
+
+```typescript
+// Type the function signature and pause...
+function parseUserInput(raw: string): ParsedInput {
+  // Ghost text completes the entire body
+}
+```
+
+The ghost text preview shows the full multi-line block before you commit.
+
+## Configuring autocomplete
+
+<Tabs>
+  <Tab title="Enable / disable">
+    Open **Settings** (`Cmd+,` / `Ctrl+,`) and search for `opencursor.autocomplete.enabled`. Toggle the checkbox to enable or disable completions globally.
+
+    ```json settings.json
+    {
+      "opencursor.autocomplete.enabled": true
+    }
+    ```
+  </Tab>
+  <Tab title="Model selection">
+    Autocomplete uses the same model pool as the chat panel. To dedicate a faster or cheaper model to completions, set:
+
+    ```json settings.json
+    {
+      "opencursor.autocomplete.model": "gpt-3.5-turbo"
+    }
+    ```
+
+    For offline use, set this to an Ollama model name (e.g., `"llama3"`).
+  </Tab>
+  <Tab title="Trigger delay">
+    Adjust the delay (in milliseconds) before a completion request fires:
+
+    ```json settings.json
+    {
+      "opencursor.autocomplete.debounceMs": 300
+    }
+    ```
+
+    Lower values increase responsiveness but may generate more API calls.
+  </Tab>
+</Tabs>
+
+## Context passed to the LLM
+
+`AutocompleteProvider` builds a prompt that includes:
+
+| Context piece | Description |
+|---|---|
+| Prefix | All code above the cursor in the current file |
+| Suffix | Code below the cursor (helps the model infer what comes next) |
+| Language ID | The VS Code language identifier (e.g., `typescript`, `python`) |
+| Open tabs | Content from other editor tabs when cross-file context is enabled |
+
+Providing more open, relevant files generally improves suggestion quality.
+
+## Using Ollama for offline completions
+
+OpenCursor's `OllamaClient` lets `AutocompleteProvider` run entirely on-device — no API key needed.
+
+<Steps>
+  <Step title="Install Ollama">
+    Download and install Ollama from [https://ollama.com](https://ollama.com), then pull a code model:
+
+    ```bash
+    ollama pull codellama
+    ```
+  </Step>
+  <Step title="Set the autocomplete model">
+    In settings, point autocomplete at your local model:
+
+    ```json settings.json
+    {
+      "opencursor.autocomplete.model": "codellama",
+      "opencursor.ollama.baseUrl": "http://localhost:11434"
+    }
+    ```
+  </Step>
+  <Step title="Start typing">
+    With Ollama running in the background, ghost-text completions now resolve locally without an internet connection.
+  </Step>
+</Steps>
+
+<Tip>
+Autocomplete works best when your API key or Ollama instance is configured before you start a session. If ghost text never appears, check that `opencursor.autocomplete.enabled` is `true` and that the model can be reached.
+</Tip>
+
+## Known limitations
+
+- Multi-cursor editing is currently broken when AI suggestions are active (tracked as a high-priority bug in v1.0.1).
+- Format-on-save can conflict with an in-progress autocomplete suggestion.
+- Completions for very large files (over 10 MB) may be slow or incomplete due to a general large-file performance issue in v1.0.1.

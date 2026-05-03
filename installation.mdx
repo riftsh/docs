@@ -1,0 +1,208 @@
+---
+title: "Install OpenCursor on macOS, Windows, and Linux"
+description: "Download a pre-built OpenCursor release or build from source using Node.js 18+, Git, and Python 3.8+. Covers macOS, Windows, and Linux."
+---
+
+You can get OpenCursor running in two ways: download a pre-built binary from GitHub Releases, or build the editor yourself from source. Building from source takes 5–30 minutes depending on your machine and which build type you choose.
+
+<Warning>
+  OpenCursor is pre-1.0. Pre-built releases may not yet be available for all platforms. If a release is not listed for your platform, build from source using the instructions below.
+</Warning>
+
+## Option 1: Download a pre-built release
+
+Pre-built binaries are published to the [GitHub Releases page](https://github.com/riftsh/Opencursor/releases). Download the archive for your platform and extract it to a location of your choice.
+
+| Platform | File |
+|----------|------|
+| macOS (x64) | `OpenCursor-darwin-x64.zip` |
+| Windows (x64) | `OpenCursor-win32-x64.zip` |
+| Linux (x64) | `OpenCursor-linux-x64.tar.gz` |
+
+No installer is required — extract the archive and launch the executable directly.
+
+## Option 2: Build from source
+
+### Prerequisites
+
+Before you start, confirm the following tools are installed:
+
+| Tool | Required version | Check |
+|------|-----------------|-------|
+| Node.js | 18.x or higher | `node --version` |
+| npm | 9.x or higher | `npm --version` |
+| Git | 2.x or higher | `git --version` |
+| Python | 3.8 or higher | `python --version` |
+
+You also need platform-specific build tools:
+
+<Tabs>
+  <Tab title="macOS">
+    Install the Xcode Command Line Tools. This provides the C++ compiler and other native build tools that the VS Code build system requires.
+
+    ```bash
+    xcode-select --install
+    ```
+
+    A dialog will appear — click **Install** and wait for it to complete (roughly 5–10 minutes). You do not need the full Xcode IDE.
+  </Tab>
+  <Tab title="Linux">
+    Install `build-essential`, which bundles `gcc`, `g++`, `make`, and related tools:
+
+    ```bash
+    sudo apt-get install build-essential
+    ```
+
+    On RPM-based distributions (Fedora, RHEL):
+
+    ```bash
+    sudo dnf groupinstall "Development Tools"
+    ```
+  </Tab>
+  <Tab title="Windows">
+    Install Visual Studio Build Tools. You can download them from the [Visual Studio downloads page](https://visualstudio.microsoft.com/downloads/) — look for **Build Tools for Visual Studio**.
+
+    During installation, select the **Desktop development with C++** workload.
+
+    Alternatively, install via `winget`:
+
+    ```powershell
+    winget install Microsoft.VisualStudio.2022.BuildTools
+    ```
+
+    <Note>
+      The Windows build produces `OpenCursor.exe` in `out/OpenCursor-win32-x64/`.
+    </Note>
+  </Tab>
+</Tabs>
+
+### Development build
+
+A development build skips minification to keep compile times short (~2–5 minutes). This is the recommended path for most users who want to run OpenCursor locally.
+
+```bash
+git clone https://github.com/riftsh/Opencursor.git
+cd Opencursor
+git submodule update --init --recursive
+npm install
+npm run compile-fast
+./scripts/code.sh
+```
+
+<Note>
+  On Windows, replace `./scripts/code.sh` with `.\scripts\code.bat`.
+</Note>
+
+`./scripts/code.sh` launches the editor directly from the compiled output. You should see OpenCursor open within a few seconds of the command completing.
+
+### Production build
+
+A production build applies full optimizations and minification. Use this when you want to distribute or package OpenCursor. It takes 15–30 minutes.
+
+```bash
+rm -rf node_modules out
+npm install
+npm run compile
+npm run minify-vscode
+npm run compile-build
+```
+
+Platform-specific output locations:
+
+<Tabs>
+  <Tab title="macOS">
+    ```
+    out/OpenCursor-darwin-x64/OpenCursor.app
+    ```
+  </Tab>
+  <Tab title="Windows">
+    ```
+    out/OpenCursor-win32-x64/OpenCursor.exe
+    ```
+  </Tab>
+  <Tab title="Linux">
+    ```
+    out/OpenCursor-linux-x64/opencursor
+    ```
+  </Tab>
+</Tabs>
+
+### Watch mode (active development)
+
+If you are modifying OpenCursor's source code, watch mode automatically rebuilds changed files so you don't have to rerun `compile-fast` manually:
+
+```bash
+# Rebuild everything on change
+npm run watch
+
+# Rebuild only the editor UI
+npm run watch-client
+
+# Rebuild only extensions
+npm run watch-extensions
+```
+
+After a rebuild completes, reload the running editor window with **Cmd+Shift+P** → **Developer: Reload Window**.
+
+## Troubleshooting
+
+**Out of memory during build**
+
+Increase the Node.js heap limit before running the compile command:
+
+```bash
+export NODE_OPTIONS="--max-old-space-size=8192"
+npm run compile
+```
+
+**"Cannot find module" errors**
+
+Run a clean reinstall:
+
+```bash
+rm -rf node_modules
+npm run postinstall
+npm install
+```
+
+**Git submodule errors**
+
+Reinitialize the submodule:
+
+```bash
+git submodule deinit -f .
+git submodule update --init --recursive
+```
+
+**TypeScript compilation errors**
+
+Clean the build artifacts and recompile:
+
+```bash
+npm run preinstall
+npm install
+npm run compile
+```
+
+**Extension not loading**
+
+Rebuild the AI extension separately, then rebuild the editor:
+
+```bash
+cd opencursor-submodule-beta/extensions/vscode
+npm install
+npm run compile
+cd ../../..
+npm run compile-fast
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Configure your API key and make your first AI request.
+  </Card>
+  <Card title="Add your API keys" icon="key" href="/configuration/api-keys">
+    Set up OpenAI, Anthropic, Gemini, or Ollama credentials.
+  </Card>
+</CardGroup>

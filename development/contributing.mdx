@@ -1,0 +1,242 @@
+---
+title: "How to contribute to OpenCursor development"
+description: "Set up your local environment, follow the contribution workflow, and submit pull requests to the OpenCursor open-source project on GitHub."
+---
+
+OpenCursor welcomes contributions from the community. The project is maintained by Devflex-ai and consists of two parts: the VS Code editor shell in [riftsh/Opencursor](https://github.com/riftsh/Opencursor) and the AI extension in `extensions/opencursor-submodule` (a fork of Continue.dev). Most contributions go into the submodule rather than the editor shell itself.
+
+## Community and issue tracking
+
+Before writing any code, check whether the work is already in progress or has been discussed.
+
+<Columns cols={2}>
+  <Card title="GitHub issues" icon="github" href="https://github.com/riftsh/Opencursor/issues">
+    Browse open bugs and feature requests, or file a new issue using the provided template.
+  </Card>
+  <Card title="Good first issues" icon="star" href="https://github.com/riftsh/Opencursor/issues?q=is%3Aissue+is%3Aopen+label%3A%22Good+First+Issue%22">
+    Issues labeled "Good First Issue" are scoped and well-documented for first-time contributors.
+  </Card>
+  <Card title="Discord" icon="discord" href="https://discord.gg/7QMraJUsQt">
+    Discuss changes, ask questions, or ping maintainers directly on Discord.
+  </Card>
+  <Card title="GitHub discussions" icon="comments" href="https://github.com/riftsh/Opencursor/discussions">
+    Longer-form proposals and architectural discussions.
+  </Card>
+</Columns>
+
+<Note>
+  If you plan a significant change, or the issue is already assigned to a milestone, discuss it with the assignee on Discord before opening a pull request.
+</Note>
+
+## Code structure
+
+Understanding where code lives helps you target the right repository.
+
+| Component | Location | Description |
+|-----------|----------|-------------|
+| Editor shell | [riftsh/Opencursor](https://github.com/riftsh/Opencursor) | VS Code fork. Most contributors will not end up here. |
+| AI functionality | `extensions/opencursor-submodule` | Nearly all of OpenCursor's AI features, packaged as a built-in extension. Forked from Continue.dev. **Most contributions go here.** |
+
+## Prerequisites
+
+Install the following tools before setting up the repository. Exact versions matter — mismatched versions are the most common cause of build failures.
+
+<AccordionGroup>
+  <Accordion title="Runtime and package managers" icon="box">
+    - **Node.js** — x64 architecture, version `=20.18.0` (other versions untested)
+    - **npm** — version `=10.8.2` (other versions untested)
+    - **Yarn 1 (Classic)** — version `>=1.10.1` and `<2`
+    - **Python** — version `=3.11.X` (required by node-gyp)
+    - **Rust / Cargo** — latest stable release
+    - **Git**
+  </Accordion>
+  <Accordion title="C/C++ compiler toolchain" icon="wrench">
+    A native compiler is required to build native Node modules.
+
+    <Tabs>
+      <Tab title="Windows">
+        Install the **Windows Build Tools** via the Visual Studio Installer. Select these components:
+
+        - **Desktop development with C++** (Workload)
+        - C++ MFC for v143 build tools with Spectre Mitigations (Individual Component)
+        - MSVC v143 — VS 2022 C++ x64/x86 Spectre-mitigated libs (Individual Component)
+      </Tab>
+      <Tab title="macOS">
+        Install Xcode and the Command Line Tools:
+
+        ```bash
+        xcode-select --install
+        ```
+      </Tab>
+      <Tab title="Linux">
+        Install the platform development tools. On Debian/Ubuntu:
+
+        ```bash
+        sudo apt-get install build-essential
+        ```
+      </Tab>
+    </Tabs>
+  </Accordion>
+</AccordionGroup>
+
+## Contributing workflow
+
+<Steps>
+  <Step title="Fork the repository">
+    Go to [github.com/riftsh/Opencursor](https://github.com/riftsh/Opencursor) and click **Fork** to create a copy under your GitHub account.
+  </Step>
+  <Step title="Clone your fork">
+    ```bash
+    git clone https://github.com/<your-username>/opencursor-app.git
+    cd opencursor-app
+    git submodule update --init --recursive
+    ```
+  </Step>
+  <Step title="Set up your environment">
+    Run the first-time setup script to install all dependencies and configure the build environment.
+
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```bash
+        ./scripts/opencursor/setup-environment.sh
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```bat
+        .\scripts\opencursor\setup-environment.ps1
+        ```
+      </Tab>
+    </Tabs>
+
+    For subsequent installs after the first run:
+
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```bash
+        ./scripts/opencursor/install-dependencies.sh
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```bat
+        yarn
+        ```
+      </Tab>
+    </Tabs>
+
+    <Warning>
+      On macOS, you cannot run the AI submodule inside a normally distributed OpenCursor build due to notarization restrictions. You must use a dev build. Download it from the [dev builds folder](https://drive.google.com/drive/u/0/folders/13Tnz9cL7AAUuB_eyc5n-4wJQmhN3mPWt) before continuing.
+    </Warning>
+  </Step>
+  <Step title="Build and launch the editor">
+    Start the watch compiler in one terminal, then launch the app in a second:
+
+    ```bash
+    # Terminal 1 — keep running
+    yarn watch
+    ```
+
+    Wait until the output shows:
+
+    ```
+    [watch-extensions] Finished compilation extensions with 0 errors
+    [watch-client    ] Finished compilation with 0 errors
+    ```
+
+    Then in a second terminal:
+
+    <Tabs>
+      <Tab title="macOS / Linux">
+        ```bash
+        ./scripts/code.sh
+        ```
+      </Tab>
+      <Tab title="Windows">
+        ```bat
+        # First run only
+        .\scripts\code.bat
+
+        # Subsequent runs (Git Bash)
+        ./scripts/code.sh
+        ```
+      </Tab>
+    </Tabs>
+
+    See [Building from source](/development/building-from-source) for full build options.
+  </Step>
+  <Step title="Create a branch">
+    Use the `yourname/description` convention to keep the main repository clean:
+
+    ```bash
+    git checkout -b yourname/short-description
+    ```
+  </Step>
+  <Step title="Make and test your changes">
+    Make your changes, then run the relevant test commands before committing.
+
+    **Running tests:**
+
+    ```bash
+    # Node.js unit tests
+    ./scripts/test.sh          # macOS / Linux
+    scripts\test               # Windows
+
+    # Browser tests (requires Playwright)
+    npm run test-browser
+
+    # Extension tests
+    npm run test-extension
+    ```
+
+    **Linting:**
+
+    ```bash
+    # JavaScript / TypeScript
+    yarn eslint
+
+    # CSS
+    yarn stylelint
+    ```
+
+    <Tip>
+      Install the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) to see lint errors inline as you edit.
+    </Tip>
+  </Step>
+  <Step title="Submit a pull request">
+    Push your branch and open a pull request against the main repository.
+
+    - Create one pull request per issue and [link the issue](https://github.blog/957-introducing-issue-mentions) in the PR description.
+    - Keep code changes as small as possible — avoid unrelated formatting changes.
+    - You will be asked to sign a Contributor License Agreement (CLA) on your first PR. The process is automated.
+  </Step>
+</Steps>
+
+## Working on the AI submodule
+
+Most AI feature work lives in `extensions/opencursor-submodule`, not the editor shell.
+
+<Steps>
+  <Step title="Open the submodule in your editor">
+    Open the `extensions/opencursor-submodule` directory in OpenCursor Dev or VS Code.
+  </Step>
+  <Step title="Install and build">
+    Open the command palette (`Cmd/Ctrl+Shift+P`), select **Tasks: Run Task**, then choose `install-and-build`.
+  </Step>
+  <Step title="Start the extension debugger">
+    Switch to the **Run and Debug** view, select **Extension (VS Code)** from the dropdown, and click the play button. A new window opens with the title "Extension Development Host" — this is your live development environment.
+  </Step>
+  <Step title="View logs">
+    Open the command palette and select **Developer: Open Webview Developer Tools** to inspect extension logs.
+  </Step>
+</Steps>
+
+## Debugging environment issues
+
+If the build or editor behaves unexpectedly, work through these checks in order:
+
+1. Verify your Node.js, npm, and Yarn versions match the required versions exactly.
+2. Clear your npm and Yarn caches: `npm cache clean --force && yarn cache clean`
+3. If issues persist, re-clone the repository to clear all `node_modules` and build artifacts — this resolves most persistent environment problems.
+
+## Creating issues
+
+Search [open issues](https://github.com/riftsh/Opencursor/issues) before filing a new one to avoid duplicates. Fill out the issue template with as much detail as possible. You can also reach maintainers directly on [Discord](https://discord.gg/7QMraJUsQt).

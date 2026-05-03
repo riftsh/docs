@@ -1,0 +1,179 @@
+---
+title: 'AI code intelligence in OpenCursor explained'
+description: 'AI-powered code analysis in OpenCursor: review, explain, test generation, bug fixes, refactoring, and documentation via CodeIntelligence and AIAssistants.'
+---
+
+Code intelligence in OpenCursor extends AI assistance beyond conversational chat into structured, single-purpose operations on your code. The `CodeIntelligence` class exposes a set of focused methods — each designed for a specific analysis or transformation task — so you can invoke exactly the right AI operation without writing a prompt from scratch.
+
+## Accessing code intelligence
+
+You can trigger any code intelligence operation in three ways:
+
+<Columns cols={2}>
+  <Card title="Right-click menu" icon="mouse-pointer">
+    Select code in the editor, right-click, and choose from the **OpenCursor AI** submenu. Options like **Explain Code**, **Generate Tests**, and **Fix Bug** appear when code is selected.
+  </Card>
+  <Card title="Command palette" icon="terminal">
+    Press `Cmd+Shift+P` / `Ctrl+Shift+P` and type `OpenCursor:` to see all available intelligence commands. Each command operates on the current selection or the entire active file.
+  </Card>
+  <Card title="Keyboard shortcuts" icon="keyboard">
+    Frequently used operations can be bound to custom shortcuts via the keybinding editor (`Cmd+K Cmd+S` / `Ctrl+K Ctrl+S`).
+  </Card>
+  <Card title="AI sidebar" icon="panel-right">
+    Open the AI panel (`Cmd+L` / `Ctrl+L`) and use the **Tools** tab to run intelligence operations alongside the chat.
+  </Card>
+</Columns>
+
+## Code review
+
+`CodeIntelligence.review()` performs a structured review of selected code or an entire file. It surfaces issues across several categories and presents them as inline comments or a summary in the AI panel.
+
+```typescript
+// Select this function and run "OpenCursor: Review Code"
+function processPayment(card: CardDetails, amount: number) {
+  const result = fetch(`/api/charge?card=${card.number}&amount=${amount}`);
+  return result;
+}
+// AI review: card number exposed in URL query string (security issue),
+// fetch result not awaited (logic bug), no error handling (reliability)
+```
+
+<Tip>
+The **Code review assistant** in `AIAssistants` supplements `review()` with best-practice commentary specific to the detected language and framework.
+</Tip>
+
+## Explain code
+
+`CodeIntelligence.explainCode()` produces a plain-language explanation of selected code. It describes what the code does, why each part exists, and flags anything unusual or non-obvious.
+
+Use it to:
+- Onboard to an unfamiliar codebase
+- Understand a complex algorithm before modifying it
+- Document decisions made by previous contributors
+
+## Generate tests
+
+`CodeIntelligence.generateTests()` writes unit tests for selected functions or classes. The output uses the testing framework already present in the project when it can be inferred from `package.json` or existing test files.
+
+<Tabs>
+  <Tab title="Example input">
+    ```typescript src/math.ts
+    export function clamp(value: number, min: number, max: number): number {
+      return Math.min(Math.max(value, min), max);
+    }
+    ```
+  </Tab>
+  <Tab title="Generated output">
+    ```typescript src/math.test.ts
+    import { clamp } from './math';
+
+    describe('clamp', () => {
+      it('returns value when within range', () => {
+        expect(clamp(5, 0, 10)).toBe(5);
+      });
+
+      it('returns min when value is below range', () => {
+        expect(clamp(-1, 0, 10)).toBe(0);
+      });
+
+      it('returns max when value is above range', () => {
+        expect(clamp(15, 0, 10)).toBe(10);
+      });
+
+      it('returns min when min equals max', () => {
+        expect(clamp(5, 7, 7)).toBe(7);
+      });
+    });
+    ```
+  </Tab>
+</Tabs>
+
+The **Testing assistant** in `AIAssistants` can guide a full test-coverage strategy across a module, complementing the per-function output of `generateTests()`.
+
+## Fix bugs
+
+`CodeIntelligence.fixCode()` analyzes selected code alongside any error messages, failing test output, or stack traces you provide. It returns a corrected version as an inline diff that you can accept or reject.
+
+<Steps>
+  <Step title="Select the problematic code">
+    Highlight the function, block, or file where the bug lives.
+  </Step>
+  <Step title="Run Fix Bug">
+    Right-click and choose **OpenCursor AI › Fix Bug**, or run the command from the palette.
+  </Step>
+  <Step title="Paste the error (optional)">
+    If prompted, paste the error message or stack trace. More context produces a more targeted fix.
+  </Step>
+  <Step title="Review and accept the diff">
+    The fix appears as an inline diff. Accept it to apply, or reject to discard and try a different approach.
+  </Step>
+</Steps>
+
+## Refactor code
+
+`CodeIntelligence.refactorCode()` restructures code without changing observable behavior. You can specify a refactoring goal to guide the transformation.
+
+Common goals supported:
+
+| Goal | What it does |
+|---|---|
+| Convert to TypeScript | Adds type annotations and converts `.js` to `.ts` |
+| Modernize code | Updates older patterns to current language idioms |
+| Extract function | Pulls a selected block into a named function |
+| Reduce complexity | Simplifies deeply nested or overly long functions |
+
+```typescript
+// Before: goal = "modernize code"
+var users = [];
+for (var i = 0; i < data.length; i++) {
+  if (data[i].active) {
+    users.push(data[i].name);
+  }
+}
+
+// After
+const users = data
+  .filter(user => user.active)
+  .map(user => user.name);
+```
+
+## Generate documentation
+
+`CodeIntelligence.generateDocumentation()` writes file-level or module-level documentation. It produces a README section, JSDoc/TSDoc blocks, or a standalone markdown document depending on what you select.
+
+The **Documentation assistant** in `AIAssistants` operates in a workflow mode that iterates over all public exports in a module and generates consistent doc blocks in one pass.
+
+## Generate comments
+
+`CodeIntelligence.generateComments()` adds inline comments to selected code. It targets complex logic, non-obvious decisions, and algorithmic steps — leaving simple, self-explanatory lines uncommented.
+
+<Note>
+Comments are generated in the language appropriate for the file (e.g., `//` for TypeScript, `#` for Python, `/** */` for JSDoc). Review generated comments before committing; AI-generated prose occasionally mischaracterizes intent.
+</Note>
+
+## Specialized AI assistants
+
+`AIAssistants.ts` provides domain-specific assistant modes that combine multiple `CodeIntelligence` operations with targeted system prompts:
+
+<AccordionGroup>
+  <Accordion title="Pair programming assistant">
+    Works alongside you in real time, suggesting next steps, flagging potential issues as you type, and explaining trade-offs. Activate via **OpenCursor: Pair Programming Mode**.
+  </Accordion>
+  <Accordion title="Security assistant">
+    Scans selected code for common vulnerability classes (injection, insecure deserialization, hardcoded secrets, etc.) and recommends mitigations. Complements `CodeIntelligence.review()` with a security-specific lens.
+  </Accordion>
+  <Accordion title="Performance assistant">
+    Identifies hot paths, unnecessary allocations, and algorithmic inefficiencies. Suggests optimizations with explanations of the expected impact.
+  </Accordion>
+  <Accordion title="DevOps assistant">
+    Helps write and review CI/CD configuration, Dockerfiles, Kubernetes manifests, and shell scripts. Understands common pipeline patterns and flags misconfigurations.
+  </Accordion>
+  <Accordion title="Testing assistant">
+    Guides test coverage strategy, generates integration tests in addition to unit tests, and helps write test fixtures and mocks.
+  </Accordion>
+  <Accordion title="Documentation assistant">
+    Generates comprehensive documentation including README files, API references, and inline doc blocks across an entire module.
+  </Accordion>
+</AccordionGroup>
+
+Additional specialist assistants available in `AIAssistants.ts`: Git, Docker, Kubernetes, Database, API design, UI/UX, Algorithm tutor, Regex, Shell commands, i18n, and Accessibility.

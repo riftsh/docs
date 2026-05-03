@@ -1,0 +1,158 @@
+---
+title: 'Autonomous AI coding agents in OpenCursor'
+description: 'Autonomous AI agents that plan, write, and iterate on code using WorkflowEngine modes, tool use via Agent.ts, MCP integration, and browser automation.'
+---
+
+OpenCursor's agent system goes beyond single-turn chat. Agents can autonomously plan tasks, write code across multiple files, execute tools, search the web, and iterate on their own output. The system is built on `Agent.ts` with a `ToolRegistry`, orchestrated by `WorkflowEngine`, and extended through MCP (Model Context Protocol) for external tool integration.
+
+<Warning>
+Agent features are pre-1.0. APIs, behavior, and agent capabilities are actively changing. Some features described here may not be stable in every build. Check [FEATURES_IMPLEMENTED.md](https://github.com/riftsh/Opencursor/blob/main/FEATURES_IMPLEMENTED.md) for current status.
+</Warning>
+
+## The three specialized agents
+
+The `opencursor-multiagent` extension ships three specialized agents, each with a focused role:
+
+<Columns cols={2}>
+  <Card title="Coder agent" icon="code">
+    Handles direct code generation and editing tasks. Given a goal, it writes implementation code, fills in function bodies, and updates existing files.
+  </Card>
+  <Card title="Architect agent" icon="sitemap">
+    Plans the structure of a solution before any code is written. Produces a step-by-step breakdown that other agents or the user can act on.
+  </Card>
+  <Card title="Debug agent" icon="bug">
+    Analyzes error messages, stack traces, and failing tests to identify root causes and propose targeted fixes.
+  </Card>
+  <Card title="Autonomous agent" icon="robot">
+    Chains the above agents together in a self-directed loop, executing each step without waiting for user confirmation.
+  </Card>
+</Columns>
+
+## WorkflowEngine modes
+
+`WorkflowEngine` controls how much autonomy an agent has. Three modes are available:
+
+<Tabs>
+  <Tab title="Ask mode">
+    The agent answers questions about the codebase and suggests edits, but does not apply any changes automatically. Equivalent to inline chat (`Cmd+I` / `Ctrl+I`). Ideal when you want AI input without automated writes.
+  </Tab>
+  <Tab title="Planning mode">
+    The agent produces a numbered, step-by-step plan for achieving a goal. Each step is presented for your review before execution begins. Use this to audit what the agent intends to do before committing.
+
+    ```
+    Goal: Add rate limiting to the Express API
+
+    Plan:
+    1. Install the `express-rate-limit` package
+    2. Create src/middleware/rateLimiter.ts
+    3. Import and apply the middleware in src/app.ts
+    4. Add configuration to .env.example
+    ```
+  </Tab>
+  <Tab title="Autonomous execution">
+    The agent executes all steps end-to-end without pausing. `WorkflowEngine` runs each step, checks the result, and retries on failure (see [self-healing](#self-healing-retry-logic) below). Use this for well-scoped, low-risk tasks.
+  </Tab>
+</Tabs>
+
+## Triggering agent mode
+
+<Steps>
+  <Step title="Open the command palette">
+    Press `Cmd+Shift+P` (macOS) or `Ctrl+Shift+P` (Windows/Linux).
+  </Step>
+  <Step title="Run an agent command">
+    Type `OpenCursor: Run Agent` and select the desired agent (Coder, Architect, or Debug). Alternatively, open the AI sidebar (`Cmd+L` / `Ctrl+L`) and switch the mode selector from **Chat** to **Agent**.
+  </Step>
+  <Step title="Describe the goal">
+    Enter a clear, scoped description of what you want the agent to accomplish. The more specific the goal, the more reliable the output.
+  </Step>
+  <Step title="Review the plan (Planning mode)">
+    If running in Planning mode, review each step before confirming execution. You can edit or remove steps before proceeding.
+  </Step>
+</Steps>
+
+## Self-healing retry logic
+
+When an agent step fails — for example, if generated code contains a syntax error or a tool call returns an error — `WorkflowEngine` automatically retries the step with the error output appended to the prompt. This loop runs up to a configurable maximum number of retries before surfacing the failure to the user.
+
+<Note>
+Self-healing improves reliability for well-defined tasks. It works best when the agent has enough context about the expected output format and the tool or environment constraints.
+</Note>
+
+## Tool use: Agent.ts and ToolRegistry
+
+`Agent.ts` uses a `ToolRegistry` to expose a set of callable tools to the model. The model can decide to invoke a tool mid-generation, wait for the result, and continue reasoning.
+
+Built-in tools include:
+
+| Tool | Source file | Description |
+|---|---|---|
+| Web search | `WebSearchTool` | Queries DuckDuckGo and returns top results |
+| Browser automation | `BrowserTool` | Controls a Puppeteer browser instance |
+| File read/write | Core agent tools | Reads and writes files in the workspace |
+| Shell execution | Core agent tools | Runs shell commands in the integrated terminal |
+
+## Web search
+
+`WebSearchTool` uses DuckDuckGo to perform searches without requiring an API key. The agent invokes this tool when it needs up-to-date information — for example, to look up a library's latest API or check a package version.
+
+```
+Agent: I need to find the current stable version of Fastify before writing the package.json.
+→ Tool call: web_search("fastify latest stable version")
+→ Result: Fastify v4.28.1
+Agent: Using fastify@4.28.1 in package.json.
+```
+
+## Browser automation
+
+`BrowserTool` wraps Puppeteer to give the agent a real browser it can control programmatically. This enables tasks like:
+
+- Navigating to a URL and extracting page content
+- Taking screenshots for visual verification
+- Filling out and submitting forms
+- Scraping structured data from web pages
+
+<Note>
+Browser automation requires Puppeteer to be available in the extension environment. This feature is in active development and may require manual setup in the current build.
+</Note>
+
+## MCP (Model Context Protocol) integration
+
+`MCPServer.ts` implements the Model Context Protocol client, allowing OpenCursor agents to connect to any MCP-compatible external tool server. This is the extension point for integrating custom tools, internal APIs, or third-party services into the agent's tool registry.
+
+<Steps>
+  <Step title="Start an MCP server">
+    Run or configure an MCP-compatible server that exposes the tools you want the agent to use.
+  </Step>
+  <Step title="Register the server in settings">
+    Add the server endpoint to OpenCursor's MCP configuration:
+
+    ```json settings.json
+    {
+      "opencursor.mcp.servers": [
+        {
+          "name": "my-tools",
+          "url": "http://localhost:8080/mcp"
+        }
+      ]
+    }
+    ```
+  </Step>
+  <Step title="Use the tools in agent mode">
+    Tools registered by the MCP server appear in `ToolRegistry` and are available to all agents automatically.
+  </Step>
+</Steps>
+
+## Known limitations
+
+<AccordionGroup>
+  <Accordion title="Agent features are pre-1.0">
+    The agent system is in active development. Behavior, prompt formats, and tool contracts may change between builds. Autonomous execution is not recommended for tasks involving destructive file operations in the current state.
+  </Accordion>
+  <Accordion title="Extension host crashes on malformed AI JSON">
+    If the model returns malformed JSON in a tool call, the extension host can crash. This is a high-priority bug in the v1.0.1 milestone.
+  </Accordion>
+  <Accordion title="Memory leak with Ollama">
+    Running agents with an Ollama backend can cause a memory leak in the extension host over long sessions. Reloading the window periodically mitigates this until the fix lands in v1.0.1.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,132 @@
+---
+title: "Choose and configure AI models in OpenCursor"
+description: "Select from OpenAI GPT-4, Anthropic Claude 3, Google Gemini, DeepSeek, or local Ollama models in the OpenCursor chat panel and autocomplete engine."
+---
+
+OpenCursor routes your prompts through `LLMClient.ts`, which handles multi-provider model switching at runtime. You can change the active model at any time from the model selector in the AI chat panel — no restart required. This page covers the model families available for each provider and guidance on choosing the right model for your task.
+
+## Selecting a model
+
+Open the AI chat panel with `Cmd+L` (macOS) or `Ctrl+L` (Windows/Linux). Click the model selector dropdown at the top of the panel to see available models for your configured provider. Select a model and your next message will use it.
+
+<Note>
+  The model selector shows models available for whichever provider you have configured in **Settings → OpenCursor: AI Configuration**. If you want to use a model from a different provider, update your provider and API key first.
+</Note>
+
+## Model families by provider
+
+<Tabs>
+  <Tab title="OpenAI">
+    OpenAI's GPT models are general-purpose and well-suited to both chat and code tasks.
+
+    | Model | Best for |
+    |-------|----------|
+    | GPT-4 | Complex reasoning, architecture discussions, nuanced code review |
+    | GPT-3.5 | Faster, lower-cost responses for routine questions and autocomplete |
+
+    <Tip>
+      GPT-3.5 is significantly cheaper than GPT-4. Use GPT-3.5 for quick lookups or boilerplate generation and GPT-4 for complex multi-file refactors.
+    </Tip>
+
+    **To use OpenAI models:** configure your OpenAI API key under [API keys](/configuration/api-keys), then set **Provider** to **OpenAI**.
+  </Tab>
+
+  <Tab title="Anthropic">
+    Anthropic's Claude 3 family offers a range of speed and capability trade-offs.
+
+    | Model | Best for |
+    |-------|----------|
+    | Claude 3 Opus | Hardest reasoning tasks, large context windows, detailed code review |
+    | Claude 3 Sonnet | Balanced speed and capability for everyday coding tasks |
+    | Claude 3 Haiku | Fast, low-cost responses for simple questions and autocomplete |
+
+    Claude models have large context windows, which makes them effective when you need to include many files or long code snippets in a single prompt.
+
+    **To use Anthropic models:** configure your Anthropic API key under [API keys](/configuration/api-keys), then set **Provider** to **Anthropic**.
+  </Tab>
+
+  <Tab title="Google Gemini">
+    Google Gemini models are available through Google AI Studio.
+
+    | Model | Best for |
+    |-------|----------|
+    | Gemini 1.5 Pro | Long-context tasks, multimodal reasoning |
+    | Gemini 1.5 Flash | Fast, cost-effective responses |
+
+    **To use Gemini models:** configure your Google API key under [API keys](/configuration/api-keys), then set **Provider** to **Google**.
+  </Tab>
+
+  <Tab title="DeepSeek">
+    DeepSeek offers models specifically optimized for software development tasks at competitive pricing.
+
+    | Model | Best for |
+    |-------|----------|
+    | DeepSeek Coder | Code generation, completion, and debugging |
+    | DeepSeek Chat | General conversation and explanation tasks |
+
+    <Tip>
+      DeepSeek Coder consistently outperforms general-purpose models on code-specific benchmarks. It is a good default if your workflow is primarily writing and reviewing code.
+    </Tip>
+
+    **To use DeepSeek models:** configure your DeepSeek API key under [API keys](/configuration/api-keys), then set **Provider** to **DeepSeek**.
+  </Tab>
+
+  <Tab title="Ollama (local)">
+    Ollama runs open-source models locally. All inference happens on your machine — no data is sent to any external server.
+
+    Popular models available via Ollama:
+
+    | Model | Best for |
+    |-------|----------|
+    | `llama3` | General-purpose chat and reasoning |
+    | `codellama` | Code generation and completion |
+    | `deepseek-coder` | Code-focused tasks (local version) |
+    | `mistral` | Fast general-purpose responses |
+
+    Pull any model before selecting it:
+
+    ```bash
+    ollama pull llama3
+    ollama pull codellama
+    ollama pull mistral
+    ```
+
+    List your locally available models:
+
+    ```bash
+    ollama list
+    ```
+
+    <Tip>
+      For code tasks on a local machine, `codellama` often gives better results than `llama3`. If you have a capable GPU, try `deepseek-coder` for a strong local code model.
+    </Tip>
+
+    **To use Ollama:** install Ollama and pull a model, then set **Provider** to **Ollama** in **OpenCursor: AI Configuration**. No API key is needed.
+  </Tab>
+</Tabs>
+
+## Choosing the right model
+
+<CardGroup cols={2}>
+  <Card title="Code generation" icon="code">
+    Use a code-specialized model: **DeepSeek Coder**, **CodeLlama** (Ollama), or **GPT-4**. These models are trained on large code corpora and produce more accurate completions.
+  </Card>
+  <Card title="Code review and explanation" icon="magnifying-glass">
+    Use a high-context model: **Claude 3 Opus** or **GPT-4**. These handle long files and nuanced reasoning better than smaller models.
+  </Card>
+  <Card title="Fast autocomplete" icon="bolt">
+    Use a fast, low-cost model: **GPT-3.5**, **Claude 3 Haiku**, or **Gemini Flash**. Speed matters more than depth for inline completions.
+  </Card>
+  <Card title="Privacy-sensitive projects" icon="lock">
+    Use **Ollama** with a local model. Your code never leaves your machine.
+  </Card>
+</CardGroup>
+
+## Planned features
+
+The following model-related features are in the roadmap and not yet available:
+
+- **Token usage counter** — a widget in the chat panel showing tokens consumed per conversation.
+- **Cost estimation** — real-time cost tracking based on provider pricing.
+- **Custom model endpoints** — point OpenCursor at a self-hosted or proxy endpoint.
+- **Model fallback** — automatically retry with a secondary model if the primary fails.

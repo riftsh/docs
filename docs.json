@@ -1,0 +1,82 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "OpenCursor",
+  "theme": "palm",
+  "colors": {
+    "primary": "#007ACC",
+    "light": "#E8F4FD",
+    "dark": "#003F6B"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/riftsh/Opencursor"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/riftsh/Opencursor"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "AI Features",
+            "pages": [
+              "ai-features/ai-chat",
+              "ai-features/autocomplete",
+              "ai-features/agents",
+              "ai-features/code-intelligence"
+            ]
+          },
+          {
+            "group": "Editor",
+            "pages": [
+              "editor/overview",
+              "editor/keyboard-shortcuts",
+              "editor/extensions"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/api-keys",
+              "configuration/models",
+              "configuration/settings"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Development",
+        "groups": [
+          {
+            "group": "Building",
+            "pages": [
+              "development/building-from-source",
+              "development/build-troubleshooting"
+            ]
+          },
+          {
+            "group": "Contributing",
+            "pages": [
+              "development/contributing",
+              "development/roadmap"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

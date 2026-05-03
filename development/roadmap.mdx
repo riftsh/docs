@@ -1,0 +1,218 @@
+---
+title: "OpenCursor roadmap and development status"
+description: "Track OpenCursor's version timeline from v1.0.1 to v2.0.0, planned development phases, known issues, and feature implementation progress."
+---
+
+OpenCursor is in early development. The project is actively stabilizing the VS Code fork and integrating AI capabilities from Continue.dev. No major features are considered production-ready yet — the focus for v1.0.1 is building a reliable foundation before layering on advanced functionality.
+
+<Warning>
+  **API keys are stored in plain text in this build.** Do not store production BYOK keys in v1.0.1. The VS Code SecretStorage API integration is in progress and will be addressed before further releases.
+</Warning>
+
+## Current status
+
+| Field | Value |
+|-------|-------|
+| Version | v1.0.1 (Development Phase) |
+| Status | Early development — foundation building |
+| Maintainer | Devflex-ai |
+| Last updated | April 2026 |
+
+## Version timeline
+
+| Version | Focus | ETA |
+|---------|-------|-----|
+| v1.0.0 | VS Code fork foundation (merged, features pending) | Foundation |
+| **v1.0.1** | **Current: Bug fixes + core features** | **Q2 2026** |
+| v1.0.2 | Editor enhancements | Q3 2026 |
+| v1.0.3 | UI/UX polish | Q4 2026 |
+| v1.1.0 | Advanced features | Q1 2027 |
+| v2.0.0 | Enterprise and collaboration | 2027 |
+
+## Development phases
+
+<AccordionGroup>
+  <Accordion title="Phase 1 — Foundation and stability (v1.0.1)" defaultOpen={true} icon="hammer">
+    The current phase focuses on making the core editor and AI integration reliable before expanding features.
+
+    **Bug fixes (critical priority):**
+    - AI chat panel fails to initialize on macOS intermittently
+    - Memory leak in extension host with Ollama
+    - Terminal integration breaks on workspace switch
+    - API keys stored in plain text — SecretStorage API integration in progress
+    - Inline edits apply to wrong line range
+
+    **Bug fixes (high priority):**
+    - Chat history does not persist between sessions
+    - Multi-cursor editing broken with AI suggestions
+    - Theme switching does not apply to the AI chat panel
+    - Large files (>10 MB) cause performance degradation
+    - Command palette excludes AI commands
+    - Extension host crashes on malformed AI JSON responses
+
+    **Core chat features:**
+    - Multi-turn conversation history with persistence
+    - Export chat as Markdown or PDF
+    - Chat search and filtering
+    - Message pinning and bookmarking
+    - Code block syntax highlighting in chat
+    - Inline diff preview for AI suggestions
+    - Accept/reject buttons for inline edits
+    - AI response streaming with typing indicator
+    - Model selector with token usage counter
+    - Context indicator showing included files
+
+    **AI model integration:**
+    - Full Continue.dev integration
+    - OpenAI GPT-4 / GPT-3.5 support
+    - Anthropic Claude 3 support
+    - Google Gemini support
+    - Local Ollama integration
+    - BYOK (Bring Your Own Key) system
+    - Custom model endpoint support
+    - Model fallback mechanisms
+    - Usage tracking and cost estimation
+  </Accordion>
+
+  <Accordion title="Phase 2 — Editor enhancements (v1.0.2)" icon="code">
+    This phase introduces AI-powered coding assistance directly in the editor, making the edit loop faster and smarter.
+
+    **AI-powered coding:**
+    - Tab autocomplete with AI suggestions
+    - Ghost text for inline completions
+    - Smart code completion ranking
+    - Context-aware symbol suggestions
+    - Multi-cursor AI support
+    - AI-powered go-to-definition
+    - AI-generated documentation hover
+    - Inline parameter hints from AI
+    - Refactoring suggestions panel
+    - Test generation from existing code
+
+    **Code intelligence:**
+    - Natural language code search
+    - Semantic codebase understanding
+    - Auto-generate unit and integration tests
+    - Auto-generate README and CHANGELOG
+    - Code review automation
+    - Security vulnerability detection
+    - Performance optimization suggestions
+  </Accordion>
+
+  <Accordion title="Phase 3 — UI/UX polish (v1.0.3)" icon="palette">
+    Phase 3 focuses on visual quality, layout improvements, and a cohesive design language across the editor and AI interface.
+
+    **Layout and navigation:**
+    - Collapsible activity bar sections
+    - Floating AI chat panel
+    - Tab stacking with previews
+    - Breadcrumbs with file icons
+    - Custom scrollbars and smooth scrolling
+
+    **AI interface redesign:**
+    - Chat panel with message bubbles
+    - Typing indicator animation
+    - Inline diff preview styling
+    - Accept/reject button design
+    - Model selector dropdown with logos
+    - Token usage counter widget
+    - Conversation history sidebar
+    - Context indicator UI
+
+    **Editor visuals:**
+    - Bracket pair colorization 2.0
+    - Sticky headers for functions and classes
+    - Custom cursor styles (block, line, bar)
+    - Selection highlight animation
+    - Inline parameter hints styling
+    - Error squiggle animation
+    - Quick fix lightbulb animation
+
+    **Terminal and status bar:**
+    - Terminal tabs with process indicators
+    - AI status bar icon with animation
+    - Debug console object tree view
+    - Notification center for AI alerts
+    - Settings UI with AI categories
+  </Accordion>
+
+  <Accordion title="Phase 4 — Advanced and enterprise (v1.1.0+)" icon="building">
+    Long-term work targeting team workflows, compliance requirements, and on-premise deployments.
+
+    **Team features:**
+    - Real-time pair programming
+    - Team knowledge sharing
+    - Shared AI prompts library
+    - Organization-wide model management
+    - Audit logging for AI interactions
+
+    **Enterprise:**
+    - Compliance reporting (GDPR / SOC2)
+    - SSO / SAML integration
+    - On-premise deployment option
+    - Air-gapped environment support
+    - Custom model fine-tuning interface
+
+    **Architecture tooling:**
+    - Architecture diagram generation
+    - Database migration generation
+  </Accordion>
+</AccordionGroup>
+
+## Known issues
+
+The following issues are tracked for the current v1.0.1 cycle.
+
+<Warning>
+  **Security — API keys stored in plain text.** Do not use production API keys in this build. The fix (VS Code SecretStorage API) is in progress.
+</Warning>
+
+| Issue | Severity |
+|-------|----------|
+| API keys stored in plain text | Critical / Security blocker |
+| AI chat panel fails to initialize on macOS intermittently | Critical |
+| Memory leak in extension host with Ollama | Critical |
+| Terminal integration breaks on workspace switch | Critical |
+| Inline edits apply to wrong line range | Critical |
+| Chat history does not persist between sessions | High |
+| Multi-cursor editing broken with AI suggestions | High |
+| Theme switching does not apply to AI chat panel | High |
+| Large files (>10 MB) cause performance issues | High |
+| Command palette excludes AI commands | High |
+| Extension host crashes on malformed AI JSON | High |
+| Auto-save triggers during AI streaming | Medium |
+| Minimap glitches with AI highlighting | Medium |
+| Status bar shows wrong AI model name | Medium |
+| Format on save conflicts with AI suggestions | Medium |
+
+## Feature implementation status
+
+OpenCursor is pre-1.0 with approximately 120 features implemented out of 300 planned. The breakdown below reflects the current state across the three main feature areas.
+
+<Columns cols={3}>
+  <Card title="AI features" icon="robot">
+    ~35 of 100 planned features implemented.
+
+    Includes model integrations, chat panel, inline diff, and BYOK.
+  </Card>
+  <Card title="Editor features" icon="code">
+    ~45 of 100 planned features implemented.
+
+    Includes core VS Code functionality, keyboard shortcuts, and extension support.
+  </Card>
+  <Card title="IDE features" icon="window-maximize">
+    ~40 of 100 planned features implemented.
+
+    Includes terminal integration, debugger, and workspace management.
+  </Card>
+</Columns>
+
+<Note>
+  The complete feature catalog with priorities (P0–P3) and complexity ratings is tracked in `FEATURE_MASTERLIST_9000.md` in the repository. The current implementation status is tracked in `FEATURES_IMPLEMENTED.md`.
+</Note>
+
+## Contributing to the roadmap
+
+If you want to work on a roadmap item, check the [GitHub issues](https://github.com/riftsh/Opencursor/issues) to see whether it is already assigned or in progress. For significant new proposals, open a discussion or reach out on [Discord](https://discord.gg/7QMraJUsQt) before investing time in an implementation.
+
+See the [contributing guide](/development/contributing) for environment setup and pull request instructions.

@@ -1,0 +1,175 @@
+---
+title: "Configure OpenCursor settings and preferences"
+description: "Configure AI providers, editor behavior, themes, and keybindings in OpenCursor through the settings UI or by editing settings.json directly."
+---
+
+OpenCursor inherits the VS Code settings system and adds an **OpenCursor** category for AI-specific configuration. You can change most settings through the visual Settings editor, or edit `settings.json` directly for finer control. Changes take effect immediately without restarting the editor.
+
+## Opening settings
+
+| Method | Shortcut |
+|--------|----------|
+| Settings UI | `Cmd+,` (macOS) / `Ctrl+,` (Windows/Linux) |
+| Settings JSON | `Cmd+Shift+P` → **Open User Settings (JSON)** |
+| Keyboard shortcuts editor | `Cmd+K Cmd+S` (macOS) / `Ctrl+K Ctrl+S` (Windows/Linux) |
+
+You can also reach settings through **File → Preferences → Settings** (Windows/Linux) or **Code → Settings → Settings** (macOS).
+
+## Settings categories
+
+<AccordionGroup>
+  <Accordion title="OpenCursor: AI Configuration" defaultOpen={true}>
+    All OpenCursor-specific AI settings live under the **OpenCursor** category in the Settings UI. Search for `opencursor` to filter to these settings quickly.
+
+    | Setting | Description |
+    |---------|-------------|
+    | **Provider** | The AI provider to use: OpenAI, Anthropic, Google, DeepSeek, or Ollama. |
+    | **Model** | The specific model to use for the selected provider. |
+    | **API Key** | Your provider API key. See [API keys](/configuration/api-keys) for per-provider instructions. |
+    | **Autocomplete: Enable** | Toggle AI-powered inline completions on or off. |
+
+    In `settings.json`:
+
+    ```json
+    {
+      "opencursor.provider": "anthropic",
+      "opencursor.model": "claude-3-sonnet",
+      "opencursor.apiKey": "sk-ant-...",
+      "opencursor.autocomplete.enabled": true
+    }
+    ```
+
+    <Warning>
+      API keys are currently stored in plain text in your user settings file. Do not commit `settings.json` to version control. A secure storage migration is in progress.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Editor behavior">
+    These settings control how the editor formats and handles code. They are managed by `SettingsManager.ts` in the `opencursor-settings` extension.
+
+    | Setting | Description |
+    |---------|-------------|
+    | **Editor: Format On Save** | Automatically format the file when you save. |
+    | **Editor: Tab Size** | Number of spaces a tab character represents. |
+    | **Editor: Insert Spaces** | Use spaces instead of tab characters. |
+    | **Files: Trim Trailing Whitespace** | Remove trailing whitespace on save. |
+    | **Files: Insert Final Newline** | Ensure files end with a newline on save. |
+
+    In `settings.json`:
+
+    ```json
+    {
+      "editor.formatOnSave": true,
+      "editor.tabSize": 2,
+      "editor.insertSpaces": true,
+      "files.trimTrailingWhitespace": true,
+      "files.insertFinalNewline": true
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="File and language associations">
+    You can tell OpenCursor to treat specific file extensions as a given language, or override the language detected automatically.
+
+    ```json
+    {
+      "files.associations": {
+        "*.mdx": "mdx",
+        "*.env.local": "dotenv",
+        "Dockerfile.*": "dockerfile"
+      }
+    }
+    ```
+
+    Language associations affect syntax highlighting, IntelliSense, and which formatter is applied on save.
+  </Accordion>
+
+  <Accordion title="Vim mode">
+    OpenCursor includes a built-in Vim emulation engine (`VimEngine.ts`). Enable it in settings or via the command palette.
+
+    ```json
+    {
+      "vim.enable": true
+    }
+    ```
+
+    When Vim mode is enabled, the editor enters normal mode on startup. Use `i` to enter insert mode and `Esc` to return to normal mode. Standard Vim motions, operators, and text objects are supported.
+
+    <Tip>
+      You can toggle Vim mode at any time from the command palette: press `Cmd+Shift+P` / `Ctrl+Shift+P` and search for **Vim: Toggle**.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Themes and appearance">
+    OpenCursor ships with the built-in VS Code themes and supports any theme extension available on [Open VSX](https://open-vsx.org/).
+
+    **Change the color theme:**
+    - Press `Cmd+K Cmd+T` / `Ctrl+K Ctrl+T` to open the theme picker.
+    - Or go to **Settings → Color Theme**.
+
+    **Install a theme extension:**
+    1. Open the Extensions panel with `Cmd+Shift+X` / `Ctrl+Shift+X`.
+    2. Search for a theme by name (for example, "Dracula" or "One Dark Pro").
+    3. Click **Install**, then select the theme from the theme picker.
+
+    **File icon themes** are managed by `ThemeManager.ts`. You can change the file icon theme under **Settings → File Icon Theme** or by running **Preferences: File Icon Theme** from the command palette.
+
+    ```json
+    {
+      "workbench.colorTheme": "Default Dark Modern",
+      "workbench.iconTheme": "vs-seti"
+    }
+    ```
+
+    <Note>
+      Some Microsoft-proprietary theme extensions may not be available on Open VSX. Search for community alternatives with the same name.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Keyboard shortcuts">
+    Open the keyboard shortcuts editor with `Cmd+K Cmd+S` (macOS) or `Ctrl+K Ctrl+S` (Windows/Linux). You can search for any command by name and assign or reassign a keybinding by clicking the pencil icon.
+
+    To edit keybindings in JSON, click the **Open Keyboard Shortcuts (JSON)** icon in the top-right corner of the shortcuts editor.
+
+    ```json
+    [
+      {
+        "key": "ctrl+shift+a",
+        "command": "opencursor.openAIChat"
+      }
+    ]
+    ```
+
+    OpenCursor supports Sublime Text and Vim keymaps through extension packs available on Open VSX.
+  </Accordion>
+</AccordionGroup>
+
+## Editing settings.json directly
+
+Power users can edit the settings JSON file directly for settings that are not exposed in the UI, or to share a configuration across machines.
+
+<Steps>
+  <Step title="Open the settings file">
+    Press `Cmd+Shift+P` / `Ctrl+Shift+P` and run **Open User Settings (JSON)**. This opens `settings.json` in the editor.
+  </Step>
+  <Step title="Edit your settings">
+    Add or modify key-value pairs. The editor provides IntelliSense completions for valid setting names and values.
+
+    ```json
+    {
+      "editor.fontSize": 14,
+      "editor.fontFamily": "JetBrains Mono, monospace",
+      "editor.formatOnSave": true,
+      "opencursor.provider": "openai",
+      "opencursor.autocomplete.enabled": true
+    }
+    ```
+  </Step>
+  <Step title="Save to apply">
+    Save the file with `Cmd+S` / `Ctrl+S`. Settings take effect immediately.
+  </Step>
+</Steps>
+
+<Note>
+  **Settings sync** is on the roadmap but not yet implemented. To share settings between machines, manually copy your `settings.json` file. It is located in `~/.opencursor/User/settings.json` on macOS and Linux, and `%APPDATA%\opencursor\User\settings.json` on Windows.
+</Note>

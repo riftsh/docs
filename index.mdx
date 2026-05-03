@@ -1,0 +1,56 @@
+---
+title: "OpenCursor: Open-source AI code editor, no subscription"
+description: "OpenCursor is a VS Code fork with built-in AI coding features. Bring your own API keys for OpenAI, Anthropic, Gemini, or run local models with Ollama."
+---
+
+OpenCursor is a free, open-source AI code editor built on VS Code. Unlike subscription-based AI editors, OpenCursor lets you bring your own API keys — connect OpenAI, Anthropic, Gemini, or run fully local models via Ollama with no monthly fees.
+
+<CardGroup cols={2}>
+  <Card title="Get started" icon="rocket" href="/introduction">
+    Learn what OpenCursor is and how it compares to other AI editors.
+  </Card>
+  <Card title="Install OpenCursor" icon="download" href="/installation">
+    Download or build OpenCursor for macOS, Windows, or Linux.
+  </Card>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Configure your AI provider and start coding with AI in minutes.
+  </Card>
+  <Card title="Add your API keys" icon="key" href="/configuration/api-keys">
+    Set up OpenAI, Anthropic, Gemini, or local Ollama keys.
+  </Card>
+</CardGroup>
+
+## Core AI features
+
+<CardGroup cols={2}>
+  <Card title="AI chat" icon="message" href="/ai-features/ai-chat">
+    Open a chat panel with Cmd+L to ask questions about your codebase.
+  </Card>
+  <Card title="Tab autocomplete" icon="wand-magic-sparkles" href="/ai-features/autocomplete">
+    Context-aware code completions that appear as you type.
+  </Card>
+  <Card title="AI agents" icon="robot" href="/ai-features/agents">
+    Autonomous coding agents that plan, write, and iterate on code.
+  </Card>
+  <Card title="Code intelligence" icon="brain" href="/ai-features/code-intelligence">
+    Review, explain, test generation, refactoring, and documentation.
+  </Card>
+</CardGroup>
+
+## Getting started in 3 steps
+
+<Steps>
+  <Step title="Download or build OpenCursor">
+    Clone the repository and run `npm install && npm run compile-fast && ./scripts/code.sh`, or download a pre-built release from GitHub.
+  </Step>
+  <Step title="Add your API key">
+    Open **Settings** → **OpenCursor: AI Configuration** and paste your OpenAI, Anthropic, or Gemini API key. For local models, install Ollama and select it as your provider.
+  </Step>
+  <Step title="Start coding with AI">
+    Press `Cmd+L` (macOS) or `Ctrl+L` (Windows/Linux) to open the AI chat panel. Press `Cmd+I` / `Ctrl+I` anywhere in the editor for inline AI editing.
+  </Step>
+</Steps>
+
+<Note>
+  OpenCursor is pre-1.0 and under active development. Some features may change. Check the [roadmap](/development/roadmap) for current status and upcoming plans.
+</Note>

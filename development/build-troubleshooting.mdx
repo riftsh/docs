@@ -1,0 +1,127 @@
+---
+title: 'Troubleshoot common OpenCursor build errors'
+description: 'Fix frequent OpenCursor build failures: out-of-memory errors, missing modules, Git submodule issues, TypeScript errors, and macOS notarization problems.'
+---
+
+Build failures usually fall into a small set of categories: memory limits, stale dependencies, submodule state, or TypeScript compilation problems. This page lists each error with the exact command sequence to resolve it, drawn directly from the OpenCursor build documentation.
+
+<Note>
+  Before diving into specific errors, confirm you are on a supported Node.js version (`node --version` should return 18.x or higher) and that all Git submodules are initialized (`git submodule update --init --recursive`).
+</Note>
+
+## Common build errors
+
+<AccordionGroup>
+  <Accordion title='"Out of memory" during build'>
+    The build process can exhaust the default Node.js heap when compiling the full editor. Increase the heap limit before running the compile step:
+
+    ```bash
+    export NODE_OPTIONS="--max-old-space-size=8192"
+    npm run compile
+    ```
+
+    <Tip>
+      Add `export NODE_OPTIONS="--max-old-space-size=8192"` to your shell profile (`.zshrc`, `.bashrc`, etc.) so the limit applies to every build session automatically.
+    </Tip>
+  </Accordion>
+
+  <Accordion title='"Cannot find module" errors'>
+    This error usually means the `node_modules` directory is incomplete, corrupt, or out of sync with `package.json`. Remove it and reinstall:
+
+    ```bash
+    rm -rf node_modules
+    npm run postinstall
+    npm install
+    ```
+
+    The `postinstall` step runs native addon compilation (`node-gyp`) that must complete before the regular install.
+  </Accordion>
+
+  <Accordion title='Git submodule errors'>
+    If the `opencursor-submodule-beta` directory is empty, partially cloned, or in a detached HEAD state, deinitialize and re-clone all submodules:
+
+    ```bash
+    git submodule deinit -f .
+    git submodule update --init --recursive
+    ```
+
+    <Warning>
+      `git submodule deinit -f .` removes all local submodule content. Any uncommitted changes inside a submodule will be lost.
+    </Warning>
+  </Accordion>
+
+  <Accordion title='TypeScript compilation errors'>
+    Stale generated type declarations or an out-of-sync TypeScript configuration can produce cascading TS errors that are unrelated to your own changes. Run the preinstall hook and then rebuild:
+
+    ```bash
+    npm run preinstall
+    npm install
+    npm run compile
+    ```
+
+    The `preinstall` script regenerates build configuration before the dependency tree is resolved.
+  </Accordion>
+
+  <Accordion title='Extension not loading after build'>
+    If OpenCursor launches but the AI sidebar is missing or the extension panel reports an error, the extension submodule may not be built. Build it separately and then rebuild the main editor:
+
+    ```bash
+    cd opencursor-submodule-beta/extensions/vscode
+    npm install
+    npm run compile
+    cd ../../..
+    npm run compile-fast
+    ```
+
+    After the build completes, reload the window:
+
+    - Open the command palette (`Cmd+Shift+P` / `Ctrl+Shift+P`)
+    - Run **Developer: Reload Window**
+  </Accordion>
+
+  <Accordion title='macOS notarization issues'>
+    Self-built release binaries on macOS are not notarized by Apple, which prevents the AI extension (submodule) from loading inside them. This is a macOS Gatekeeper restriction, not a build bug.
+
+    **Solution:** Use the pre-built dev version of OpenCursor for extension development on macOS:
+
+    [Download dev build from Google Drive](https://drive.google.com/drive/u/0/folders/13Tnz9cL7AAUuB_eyc5n-4wJQmhN3mPWt)
+
+    You can still build and test the main editor shell from source — the restriction only applies to running the packaged extension inside a locally built `.app`.
+  </Accordion>
+</AccordionGroup>
+
+## General debugging tips
+
+If you are stuck after trying the fixes above:
+
+- Confirm you are running the right versions of Node.js, npm, and yarn (`node --version`, `npm --version`, `yarn --version`).
+- Clear the npm and yarn caches: `npm cache clean --force`.
+- Remove and re-clone the repository to eliminate any corrupted build artifacts: a fresh clone + `git submodule update --init --recursive` + `npm install` resolves most environment-specific problems.
+
+## Pre-release build checklist
+
+Run through this checklist before committing or tagging a release to confirm the build is in a clean state:
+
+- [ ] `npm run compile` succeeds with zero errors
+- [ ] Application launches without errors
+- [ ] Extensions load properly
+- [ ] Key bindings work (`Cmd+L` / `Ctrl+L` for AI chat, `Cmd+I` / `Ctrl+I` for inline editing)
+- [ ] Sidebar icons render correctly
+- [ ] No console errors in DevTools (open with `Help` → `Toggle Developer Tools`)
+
+## Report a build issue
+
+If none of the fixes above resolve your problem, open an issue on GitHub with your OS, Node.js version, and the full error output:
+
+[Open an issue on GitHub](https://github.com/riftsh/Opencursor/issues)
+
+## Related pages
+
+<Columns cols={2}>
+  <Card title="Build from source" icon="hammer" href="/development/building-from-source">
+    Step-by-step instructions for setting up the build environment and compiling OpenCursor.
+  </Card>
+  <Card title="Contributing guide" icon="code-pull-request" href="/development/contributing">
+    Learn how to fork, branch, and submit pull requests to OpenCursor.
+  </Card>
+</Columns>

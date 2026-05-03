@@ -1,0 +1,180 @@
+---
+title: "Full editor feature overview for OpenCursor"
+description: "Explore OpenCursor's editor capabilities: multi-cursor editing, Vim mode, bracket colorization, Git integration, debugger, and integrated terminal."
+---
+
+OpenCursor is a full VS Code fork, which means you get the complete VS Code editing experience alongside built-in AI features. Every standard editing capability is present — from multi-cursor editing and bracket colorization to an integrated terminal and debugger — with no functionality removed.
+
+## Core editing
+
+OpenCursor's editing engine (`MultiCursorManager.ts`, `ColumnSelectionManager.ts`) supports the power-user workflows that experienced developers rely on daily.
+
+<CardGroup cols={2}>
+  <Card title="Multi-cursor editing" icon="i-cursor">
+    Place multiple cursors simultaneously to edit several locations at once. Activate with `Alt+Click` or `Ctrl+D` / `Cmd+D` to select the next match.
+  </Card>
+  <Card title="Column and rectangular selection" icon="table-columns">
+    Select a vertical block of text across multiple lines using `Shift+Alt+drag` or keyboard shortcuts. Implemented in `ColumnSelectionManager.ts`.
+  </Card>
+  <Card title="Vim mode" icon="keyboard">
+    Full modal editing powered by `VimEngine.ts`. Enable in settings to get normal, insert, visual, and command modes with the standard Vim keybinding set.
+  </Card>
+  <Card title="Command palette" icon="magnifying-glass">
+    Press `Cmd+Shift+P` / `Ctrl+Shift+P` to open `CommandPalette.ts`. Run any editor action, open settings, or trigger extensions without leaving the keyboard.
+  </Card>
+  <Card title="Quick file open and fuzzy search" icon="bolt">
+    Press `Cmd+P` / `Ctrl+P` to open a file by fuzzy-matching its name. File fuzzy search is integrated directly into `CommandPalette.ts`.
+  </Card>
+  <Card title="Global search and replace" icon="magnifying-glass-arrow-right">
+    `SearchEngine.ts` powers project-wide search and replace with regex support, file filters, and match previews. Open with `Cmd+Shift+F` / `Ctrl+Shift+F`.
+  </Card>
+  <Card title="Symbol search" icon="at">
+    Jump to any symbol in the current file (`Cmd+Shift+O`) or across the workspace (`Cmd+T`) via `NavigationEngine`. Results update as you type.
+  </Card>
+  <Card title="Sublime keybindings" icon="keyboard">
+    Sublime Text keymaps are supported through the keymap system, letting you keep familiar shortcuts when switching from Sublime.
+  </Card>
+</CardGroup>
+
+## Visual enhancements
+
+<CardGroup cols={2}>
+  <Card title="Indent rainbow" icon="paint-roller">
+    `IndentRainbow.ts` colors each indentation level a distinct hue, making deeply nested code easier to scan at a glance.
+  </Card>
+  <Card title="Bracket pair colorization" icon="brackets-curly">
+    `BracketColorizer.ts` matches opening and closing brackets, braces, and parentheses with the same color. Bracket pair guides are also supported.
+  </Card>
+  <Card title="Trailing spaces highlight" icon="eye">
+    `TrailingSpaces.ts` highlights trailing whitespace so you can spot and remove it before committing.
+  </Card>
+  <Card title="Word and symbol highlight" icon="highlighter">
+    Clicking a word automatically highlights all its occurrences in the visible editor. Symbol highlighting is powered by `NavigationEngine`.
+  </Card>
+</CardGroup>
+
+## Navigation
+
+All navigation features are implemented in `NavigationEngine.ts` and `FoldingEngine.ts`.
+
+<AccordionGroup>
+  <Accordion title="Go to definition and references">
+    - **Go to definition** (`F12`) — jump to the symbol's declaration
+    - **Go to declaration** — navigate to where the symbol is declared
+    - **Go to implementation** — navigate to concrete implementations
+    - **Go to type definition** — jump to the type of a variable or expression
+    - **Go to references** (`Shift+F12`) — list all usages of a symbol
+    - **Find all references** — open a full references panel via `NavigationEngine.findReferences()`
+  </Accordion>
+  <Accordion title="Symbol navigation">
+    - **Go to symbol in file** (`Cmd+Shift+O`) — outline-based symbol jump
+    - **Go to symbol in workspace** (`Cmd+T`) — workspace-wide symbol search via `SearchEngine`
+    - **Go to line** (`Ctrl+G`) — jump to a specific line number
+    - **Go to bracket** — navigate to the matching bracket using `BracketColorizer`
+  </Accordion>
+  <Accordion title="History and change navigation">
+    - **Go back / Go forward** — navigate editor location history with `Alt+Left` / `Alt+Right`
+    - **Next / previous problem** — cycle through diagnostics using `ErrorLens.ts`
+    - **Next / previous change** — move between diff hunks via `DiffEngine.ts`
+    - **Next / previous match** — step through search results with `SearchEngine`
+  </Accordion>
+  <Accordion title="Code folding">
+    `FoldingEngine.ts` supports collapsing and expanding code regions:
+    - Fold the current region (`Ctrl+Shift+[`)
+    - Unfold the current region (`Ctrl+Shift+]`)
+    - Fold all (`Ctrl+K Ctrl+0`)
+    - Unfold all (`Ctrl+K Ctrl+J`)
+  </Accordion>
+</AccordionGroup>
+
+## Code actions
+
+`CodeActionsProvider.ts` provides a set of automatic and on-demand text transformations.
+
+<CardGroup cols={2}>
+  <Card title="Auto-close brackets, quotes, and tags" icon="code">
+    Opening brackets, quotes, and HTML/JSX tags are automatically closed as you type.
+  </Card>
+  <Card title="Format on save" icon="floppy-disk">
+    Enable **Format on Save** in settings (`SettingsManager`) to automatically format the active file each time you save.
+  </Card>
+  <Card title="Trim trailing whitespace" icon="scissors">
+    Removes trailing spaces and tabs from every line on save via `CodeActionsProvider.ts`.
+  </Card>
+  <Card title="Insert final newline" icon="arrow-down-to-line">
+    Automatically appends a newline at the end of files when saving.
+  </Card>
+  <Card title="Comment toggle" icon="comment">
+    Toggle line comments (`Cmd+/`) and block comments (`Shift+Alt+A`) for the current selection.
+  </Card>
+  <Card title="Duplicate and move lines" icon="copy">
+    Duplicate the current line up or down, and move lines with `Alt+Up` / `Alt+Down`. Both implemented in `CodeActionsProvider.ts`.
+  </Card>
+  <Card title="Join and transpose lines" icon="right-left">
+    Join the current line with the one below, or transpose adjacent characters and lines.
+  </Card>
+  <Card title="Emmet support" icon="wand-magic-sparkles">
+    HTML and CSS Emmet abbreviations are handled by `EmmetEngine.ts` in the `opencursor-editor` extension.
+  </Card>
+</CardGroup>
+
+## Git integration
+
+`GitIntegration.ts` (in the `opencursor-git` extension) brings rich version control into the editor without switching context.
+
+<CardGroup cols={2}>
+  <Card title="Inline blame" icon="code-branch">
+    See who last changed each line directly in the gutter. Blame annotations are rendered by `GitIntegration.blame()`.
+  </Card>
+  <Card title="Commit graph and branch visualization" icon="diagram-project">
+    A visual commit graph shows branch history and relationships. Branch visualization is powered by `GitIntegration` graph and branch methods.
+  </Card>
+  <Card title="Merge conflict resolution" icon="code-merge">
+    `MergeConflict.ts` provides inline accept/reject controls for merge conflicts directly inside the editor.
+  </Card>
+  <Card title="Advanced Git operations" icon="arrows-rotate">
+    Cherry-pick, rebase, stash management, and merge UI are all available through `GitIntegration.cherryPick()`, `rebaseBranch()`, `mergeBranch()`, and `stashes`.
+  </Card>
+</CardGroup>
+
+## Debugging
+
+`DebugEngine.ts` (in the `opencursor-debug` extension) provides a full debugging experience.
+
+<CardGroup cols={2}>
+  <Card title="Breakpoints" icon="circle-stop">
+    Set standard, conditional, logpoint, hit-count, exception, function, and data breakpoints — all supported in `DebugEngine.ts`.
+  </Card>
+  <Card title="Watch expressions" icon="eye">
+    Add expressions to the watch panel and inspect their values as execution steps through your code.
+  </Card>
+  <Card title="Call stack navigation" icon="list-ol">
+    Navigate the call stack frame by frame and inspect variables at each level.
+  </Card>
+  <Card title="Variables inspection" icon="magnifying-glass">
+    Browse all in-scope variables and their current values during a debug session.
+  </Card>
+</CardGroup>
+
+## Terminal
+
+`TerminalManager.ts` (in the `opencursor-terminal` extension) manages the integrated terminal.
+
+<CardGroup cols={2}>
+  <Card title="Multiple terminals and tabs" icon="rectangle-history">
+    Open any number of terminal instances, each in its own tab. Switch between them without leaving the editor.
+  </Card>
+  <Card title="Split terminal" icon="table-columns">
+    Split the terminal pane to view two shells side by side. Supported directly in `TerminalManager`.
+  </Card>
+  <Card title="Terminal profiles" icon="gear">
+    Define named profiles for different shells (bash, zsh, PowerShell, fish) with custom environment settings.
+  </Card>
+  <Card title="Terminal link detection" icon="link">
+    File paths and URLs in terminal output are detected and made clickable via `TerminalManager` link detection.
+  </Card>
+</CardGroup>
+
+<Note>
+  OpenCursor inherits all VS Code editor capabilities not listed here. If a feature exists in VS Code, it is available in OpenCursor unless noted otherwise in [FEATURES_IMPLEMENTED.md](https://github.com/riftsh/Opencursor/blob/main/FEATURES_IMPLEMENTED.md).
+</Note>

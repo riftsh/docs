@@ -1,0 +1,164 @@
+---
+title: "Add API keys for AI providers in OpenCursor"
+description: "Connect OpenAI, Anthropic, Google Gemini, DeepSeek, or local Ollama to OpenCursor using your own API keys — no subscription required."
+---
+
+OpenCursor is BYOK (Bring Your Own Key): you supply API keys directly from your chosen AI provider and OpenCursor uses them to power the AI chat, autocomplete, and agent features. There are no OpenCursor subscription fees or usage limits beyond what your provider charges.
+
+<Warning>
+  **Security notice — do not use production keys in this build.** API keys are currently stored in plain text. The VS Code SecretStorage API integration is in progress. Until it ships, treat any key you enter as potentially exposed and use a restricted or development key only.
+</Warning>
+
+## Where to enter your API keys
+
+Open **Settings** with `Cmd+,` (macOS) or `Ctrl+,` (Windows/Linux), then search for **OpenCursor** to find the **OpenCursor: AI Configuration** section. Enter your key in the **API Key** field and choose your provider from the **Provider** dropdown.
+
+## Supported providers
+
+<Tabs>
+  <Tab title="OpenAI">
+    OpenAI provides GPT-4 and GPT-3.5 models. You need an OpenAI account with billing enabled.
+
+    <Steps>
+      <Step title="Get your API key">
+        Go to [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys) and click **Create new secret key**. Copy the key — it is only shown once.
+      </Step>
+      <Step title="Open AI Configuration">
+        In OpenCursor, press `Cmd+,` / `Ctrl+,` to open Settings and search for **OpenCursor: AI Configuration**.
+      </Step>
+      <Step title="Enter your key">
+        Set **Provider** to **OpenAI** and paste your key into the **API Key** field.
+      </Step>
+      <Step title="Verify">
+        Press `Cmd+L` / `Ctrl+L` to open the AI chat panel and send a test message. A valid response confirms the key is working.
+      </Step>
+    </Steps>
+
+    ```text
+    Provider: OpenAI
+    API Key:  sk-...
+    ```
+  </Tab>
+
+  <Tab title="Anthropic">
+    Anthropic provides the Claude 3 family of models (Haiku, Sonnet, Opus).
+
+    <Steps>
+      <Step title="Get your API key">
+        Go to [https://console.anthropic.com/](https://console.anthropic.com/) and create an API key under **API Keys** in the settings menu.
+      </Step>
+      <Step title="Open AI Configuration">
+        In OpenCursor, press `Cmd+,` / `Ctrl+,` to open Settings and search for **OpenCursor: AI Configuration**.
+      </Step>
+      <Step title="Enter your key">
+        Set **Provider** to **Anthropic** and paste your key into the **API Key** field.
+      </Step>
+      <Step title="Verify">
+        Press `Cmd+L` / `Ctrl+L` to open the AI chat panel and send a test message.
+      </Step>
+    </Steps>
+
+    ```text
+    Provider: Anthropic
+    API Key:  sk-ant-...
+    ```
+  </Tab>
+
+  <Tab title="Google Gemini">
+    Google Gemini models are accessible through Google AI Studio.
+
+    <Steps>
+      <Step title="Get your API key">
+        Go to [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) and click **Create API key**. Select an existing Google Cloud project or create a new one.
+      </Step>
+      <Step title="Open AI Configuration">
+        In OpenCursor, press `Cmd+,` / `Ctrl+,` to open Settings and search for **OpenCursor: AI Configuration**.
+      </Step>
+      <Step title="Enter your key">
+        Set **Provider** to **Google** and paste your key into the **API Key** field.
+      </Step>
+      <Step title="Verify">
+        Press `Cmd+L` / `Ctrl+L` to open the AI chat panel and send a test message.
+      </Step>
+    </Steps>
+
+    ```text
+    Provider: Google
+    API Key:  AIza...
+    ```
+  </Tab>
+
+  <Tab title="DeepSeek">
+    DeepSeek offers cost-effective models including DeepSeek Coder and DeepSeek Chat.
+
+    <Steps>
+      <Step title="Get your API key">
+        Go to [https://platform.deepseek.com/](https://platform.deepseek.com/) and create an API key in your account dashboard.
+      </Step>
+      <Step title="Open AI Configuration">
+        In OpenCursor, press `Cmd+,` / `Ctrl+,` to open Settings and search for **OpenCursor: AI Configuration**.
+      </Step>
+      <Step title="Enter your key">
+        Set **Provider** to **DeepSeek** and paste your key into the **API Key** field.
+      </Step>
+      <Step title="Verify">
+        Press `Cmd+L` / `Ctrl+L` to open the AI chat panel and send a test message.
+      </Step>
+    </Steps>
+
+    ```text
+    Provider: DeepSeek
+    API Key:  sk-...
+    ```
+  </Tab>
+
+  <Tab title="Ollama (local)">
+    Ollama runs models locally on your machine. No API key is required and no data leaves your computer.
+
+    <Steps>
+      <Step title="Install Ollama">
+        Download and install Ollama from [https://ollama.ai](https://ollama.ai). Follow the installer for your operating system.
+      </Step>
+      <Step title="Pull a model">
+        Open a terminal and pull a model. Llama 3 is a good general-purpose starting point:
+
+        ```bash
+        ollama pull llama3
+        ```
+
+        For code-focused tasks, try CodeLlama:
+
+        ```bash
+        ollama pull codellama
+        ```
+      </Step>
+      <Step title="Select Ollama in OpenCursor">
+        In OpenCursor, press `Cmd+,` / `Ctrl+,` to open Settings and search for **OpenCursor: AI Configuration**. Set **Provider** to **Ollama**. Leave the **API Key** field empty.
+      </Step>
+      <Step title="Verify">
+        Press `Cmd+L` / `Ctrl+L` to open the AI chat panel and send a test message. Ollama must be running in the background for responses to appear.
+      </Step>
+    </Steps>
+
+    <Note>
+      Ollama must be running before you open OpenCursor. Start it with `ollama serve` if it does not start automatically after installation.
+    </Note>
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="The AI chat panel shows an authentication error">
+    Double-check that you copied the full key with no leading or trailing spaces. Keys are case-sensitive. If the key was recently created, wait a minute for it to become active on the provider's side.
+  </Accordion>
+  <Accordion title="I get a quota or rate limit error">
+    This means your key is valid but you have exceeded your provider's usage limits. Check your billing and usage settings on the provider's platform.
+  </Accordion>
+  <Accordion title="Ollama is not responding">
+    Make sure the Ollama daemon is running. Open a terminal and run `ollama serve`. Then confirm you have pulled at least one model with `ollama list`.
+  </Accordion>
+  <Accordion title="My key worked before but now fails">
+    API keys can be revoked if the provider detects unusual activity or if you regenerated your key. Generate a new key and update it in **OpenCursor: AI Configuration**.
+  </Accordion>
+</AccordionGroup>

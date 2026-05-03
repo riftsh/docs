@@ -1,0 +1,105 @@
+---
+title: 'Using the OpenCursor AI chat panel effectively'
+description: 'Use the built-in AI chat panel to have multi-turn conversations with GPT-4, Claude, Gemini, or a local Ollama model — all without leaving the editor.'
+---
+
+The AI chat panel gives you a persistent, multi-turn conversation interface directly inside OpenCursor. Powered by `LLMClient.ts` and rendered through `AgentWebviewProvider`, it connects to whichever model you configure — cloud or local — and lets you discuss code, ask questions, and apply edits without switching context.
+
+## Opening the chat panel
+
+Press `Cmd+L` on macOS or `Ctrl+L` on Windows and Linux to toggle the AI sidebar panel. The panel opens on the right side of the editor and keeps conversation history for the current session.
+
+<Note>
+Chat history does not persist between sessions yet. This is a known limitation tracked for the v1.0.1 milestone. See [Known limitations](#known-limitations) below.
+</Note>
+
+## Supported models
+
+`LLMClient.ts` connects to four provider families. Use your own API key for each — OpenCursor never stores credentials in a proprietary account.
+
+<Warning>
+API keys are currently stored in plain text. **Do not use production BYOK keys in this build.** Full VS Code `SecretStorage` API integration is in progress for v1.0.1.
+</Warning>
+
+<Columns cols={2}>
+  <Card title="OpenAI GPT-4" icon="brain">
+    Full GPT-4 and GPT-3.5 support via `@ai-sdk/openai`. Set your key in settings under **AI › OpenAI API Key**.
+  </Card>
+  <Card title="Anthropic Claude" icon="sparkles">
+    Claude 3 family via `@ai-sdk/anthropic`. Recommended for long-context reasoning and code review.
+  </Card>
+  <Card title="Google Gemini" icon="google">
+    Gemini models via `@ai-sdk/google`. Competitive on multi-modal tasks.
+  </Card>
+  <Card title="Ollama (local)" icon="server">
+    Run models offline with `OllamaClient` via `ollama-ai-provider`. No API key required.
+  </Card>
+</Columns>
+
+### Selecting a model
+
+The chat panel header includes a model selector dropdown. Pick a provider and model name before starting a conversation. The status bar may show the active model name — note that this display has a known formatting bug in v1.0.1.
+
+## Sending messages and adding context
+
+Type a message in the chat input and press `Enter` to send. To include code context:
+
+<Steps>
+  <Step title="Reference a file">
+    Type `@` followed by a file path to attach the file's content to the next message. A context indicator in the panel shows which files are included.
+  </Step>
+  <Step title="Select code first">
+    Highlight code in the editor before opening the panel. The selection is automatically attached as context.
+  </Step>
+  <Step title="Paste a snippet">
+    Paste code directly into the chat input. Wrap it in a fenced code block for best results.
+  </Step>
+</Steps>
+
+## Inline diff preview and edits
+
+When the AI suggests a code change, OpenCursor renders an inline diff preview in the editor. You can review the change before applying it.
+
+<Columns cols={2}>
+  <Card title="Accept edit" icon="check">
+    Click **Accept** or press the keybinding shown in the diff toolbar to apply the suggestion to the file.
+  </Card>
+  <Card title="Reject edit" icon="x">
+    Click **Reject** to discard the suggestion. The editor returns to its previous state.
+  </Card>
+</Columns>
+
+<Note>
+Inline edits occasionally apply to the wrong line range. This is a known critical bug targeted in v1.0.1.
+</Note>
+
+## Response streaming
+
+Responses stream token-by-token with a typing indicator so you can start reading before the full response arrives. A streaming response can be interrupted at any time by clicking **Stop** in the panel.
+
+<Note>
+Auto-save may trigger while a response is streaming, which can cause a conflict. A fix is planned for v1.0.1.
+</Note>
+
+## Multi-turn conversations
+
+The chat panel maintains the full conversation history within a session. You can ask follow-up questions and the model receives all previous messages as context, enabling iterative refinement of code.
+
+## Known limitations
+
+The following issues are tracked for the v1.0.1 release:
+
+<AccordionGroup>
+  <Accordion title="Chat history doesn't persist between sessions">
+    Closing and reopening OpenCursor clears the conversation. Persistent history with search and filtering is planned for v1.0.1 (roadmap items 16, 18).
+  </Accordion>
+  <Accordion title="Theme switching doesn't apply to the chat panel">
+    Changing your editor theme does not update the chat panel's appearance. This is a high-priority UI bug in v1.0.1.
+  </Accordion>
+  <Accordion title="AI chat panel fails to initialize on macOS intermittently">
+    A race condition can prevent `AgentWebviewProvider` from mounting on macOS. Reloading the window (`Cmd+Shift+P` › **Reload Window**) resolves it while the fix is in progress.
+  </Accordion>
+  <Accordion title="Command palette excludes AI commands">
+    AI-specific commands don't yet appear in `Cmd+Shift+P`. This is a high-priority issue for v1.0.1.
+  </Accordion>
+</AccordionGroup>

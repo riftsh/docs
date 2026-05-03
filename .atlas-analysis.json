@@ -1,0 +1,94 @@
+{
+  "projectType": "saas",
+  "projectName": "OpenCursor",
+  "projectDescription": "An open-source AI code editor forked from VS Code that lets you bring your own API keys for OpenAI, Anthropic, Gemini, or run local models via Ollama — no subscription required.",
+  "theme": "palm",
+  "primaryColor": "#007ACC",
+  "lightColor": "#E8F4FD",
+  "darkColor": "#003F6B",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "AI Features",
+            "pages": [
+              "ai-features/ai-chat",
+              "ai-features/autocomplete",
+              "ai-features/agents",
+              "ai-features/code-intelligence"
+            ]
+          },
+          {
+            "group": "Editor",
+            "pages": [
+              "editor/overview",
+              "editor/keyboard-shortcuts",
+              "editor/extensions"
+            ]
+          },
+          {
+            "group": "Configuration",
+            "pages": [
+              "configuration/api-keys",
+              "configuration/models",
+              "configuration/settings"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Development",
+        "groups": [
+          {
+            "group": "Building",
+            "pages": [
+              "development/building-from-source",
+              "development/build-troubleshooting"
+            ]
+          },
+          {
+            "group": "Contributing",
+            "pages": [
+              "development/contributing",
+              "development/roadmap"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "BYOK (Bring Your Own Key) — use OpenAI, Anthropic, Gemini, or local Ollama models",
+    "AI chat panel (Cmd+L / Ctrl+L) with multi-turn conversation history",
+    "Inline AI code editing (Cmd+I / Ctrl+I) with accept/reject workflow",
+    "Tab autocomplete with context-aware AI suggestions",
+    "Multi-agent system with Coder, Architect, and Debug specialized agents",
+    "AI code intelligence: review, explain, test generation, refactoring, documentation",
+    "Full VS Code extension compatibility via Open VSX registry",
+    "Vim mode, multi-cursor editing, and advanced navigation",
+    "Integrated terminal, Git integration, and debugging tools",
+    "MCP (Model Context Protocol) client for external tool integration"
+  ],
+  "publicApiSurface": [
+    "LLMClient — multi-provider AI client (OpenAI, Anthropic, Gemini, Ollama, DeepSeek)",
+    "AutocompleteProvider — context-aware tab completion engine",
+    "CodeIntelligence — review(), explainCode(), generateTests(), fixCode(), refactorCode(), generateDocumentation()",
+    "WorkflowEngine — planning mode, Ask mode, self-healing agent execution",
+    "Agent — autonomous coding agent with ToolRegistry",
+    "MCPServer — Model Context Protocol client for external tools",
+    "GitIntegration — blame, diff, commit graph, branch visualization",
+    "TerminalManager — multi-tab integrated terminal",
+    "DebugEngine — breakpoints, watch expressions, call stack navigation",
+    "NavigationEngine — go-to-definition, references, symbol search"
+  ]
+}

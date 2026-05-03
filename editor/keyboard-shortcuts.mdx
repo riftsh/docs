@@ -1,0 +1,193 @@
+---
+title: "Keyboard shortcuts reference for OpenCursor"
+description: "Complete keyboard shortcut reference for OpenCursor, covering AI features, navigation, editing, search, terminal, and Git organized by category."
+---
+
+OpenCursor inherits the full VS Code keybinding set and adds two AI-specific shortcuts. All standard VS Code shortcuts work without any configuration. The table below organises shortcuts by category for quick reference; the full keybinding editor is available via the command palette.
+
+<Note>
+  All shortcuts use `Cmd` on macOS and `Ctrl` on Windows and Linux. Where the two platforms differ, both are listed.
+</Note>
+
+## AI features
+
+These two shortcuts are unique to OpenCursor and are the primary entry points for AI-assisted coding.
+
+| Shortcut | Action |
+|---|---|
+| `Cmd+L` / `Ctrl+L` | Open the AI chat panel |
+| `Cmd+I` / `Ctrl+I` | Open inline AI code editing at the cursor |
+
+<Tip>
+  Use `Cmd+L` to ask broad questions about your codebase, and `Cmd+I` to make targeted edits to the code at your cursor position without switching context.
+</Tip>
+
+## Navigation
+
+<AccordionGroup>
+  <Accordion title="File navigation">
+
+| Shortcut | Action |
+|---|---|
+| `Cmd+P` / `Ctrl+P` | Quick file open (fuzzy search) |
+| `Ctrl+Tab` | Cycle through open editors |
+| `Cmd+Shift+E` / `Ctrl+Shift+E` | Focus the Explorer sidebar |
+| `Ctrl+\`` | Open integrated terminal |
+| `Cmd+\`` / `Ctrl+\`` | Create new terminal |
+
+  </Accordion>
+  <Accordion title="Symbol and code navigation">
+
+| Shortcut | Action |
+|---|---|
+| `F12` | Go to definition |
+| `Cmd+F12` / `Ctrl+F12` | Go to implementation |
+| `Shift+F12` | Go to references |
+| `Cmd+Shift+O` / `Ctrl+Shift+O` | Go to symbol in file |
+| `Cmd+T` / `Ctrl+T` | Go to symbol in workspace |
+| `Ctrl+G` | Go to line |
+| `Alt+Left` | Go back |
+| `Alt+Right` | Go forward |
+| `F8` | Next problem (error or warning) |
+| `Shift+F8` | Previous problem |
+
+  </Accordion>
+  <Accordion title="Code folding">
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl+Shift+[` | Fold region |
+| `Ctrl+Shift+]` | Unfold region |
+| `Ctrl+K Ctrl+0` | Fold all |
+| `Ctrl+K Ctrl+J` | Unfold all |
+
+  </Accordion>
+</AccordionGroup>
+
+## Editing
+
+<AccordionGroup>
+  <Accordion title="Multi-cursor and selection">
+
+| Shortcut | Action |
+|---|---|
+| `Cmd+D` / `Ctrl+D` | Select next occurrence of word |
+| `Cmd+Shift+L` / `Ctrl+Shift+L` | Select all occurrences of word |
+| `Alt+Click` | Add cursor at click position |
+| `Cmd+Alt+Down` / `Ctrl+Alt+Down` | Add cursor below |
+| `Cmd+Alt+Up` / `Ctrl+Alt+Up` | Add cursor above |
+| `Shift+Alt+Drag` | Column (rectangular) selection |
+| `Escape` | Cancel multi-cursor / clear selection |
+
+  </Accordion>
+  <Accordion title="Line operations">
+
+| Shortcut | Action |
+|---|---|
+| `Alt+Up` / `Alt+Down` | Move line up or down |
+| `Shift+Alt+Up` / `Shift+Alt+Down` | Duplicate line up or down |
+| `Ctrl+Shift+K` | Delete line |
+| `Ctrl+Enter` | Insert line below |
+| `Ctrl+Shift+Enter` | Insert line above |
+| `Cmd+/` / `Ctrl+/` | Toggle line comment |
+| `Shift+Alt+A` | Toggle block comment |
+
+  </Accordion>
+  <Accordion title="Formatting and whitespace">
+
+| Shortcut | Action |
+|---|---|
+| `Shift+Alt+F` | Format document |
+| `Ctrl+K Ctrl+F` | Format selection |
+| `Ctrl+K Ctrl+X` | Trim trailing whitespace |
+
+  </Accordion>
+</AccordionGroup>
+
+## Search
+
+| Shortcut | Action |
+|---|---|
+| `Cmd+F` / `Ctrl+F` | Find in file |
+| `Cmd+H` / `Ctrl+H` | Replace in file |
+| `Cmd+Shift+F` / `Ctrl+Shift+F` | Global search across workspace |
+| `Cmd+Shift+H` / `Ctrl+Shift+H` | Global replace across workspace |
+| `F3` | Next match |
+| `Shift+F3` | Previous match |
+| `Alt+Enter` | Select all matches |
+
+## Terminal
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl+\`` | Toggle integrated terminal |
+| `Ctrl+Shift+\`` | Create new terminal |
+| `Ctrl+Shift+5` | Split terminal |
+| `Alt+Left` / `Alt+Right` | Navigate between terminal tabs |
+
+## Git
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl+Shift+G` | Open Source Control panel |
+| `Cmd+Shift+P` → "Git: Blame" | Show inline blame for current file |
+| `Cmd+Shift+P` → "Git: View History" | Open commit graph |
+| `Cmd+Shift+P` → "Git: Checkout Branch" | Switch branches |
+
+<Note>
+  There are no default single-chord shortcuts for Git blame or the commit graph. Access these features through the command palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) or by right-clicking in the editor gutter.
+</Note>
+
+## Customising keybindings
+
+You can remap any shortcut using the built-in keybinding editor.
+
+<Steps>
+  <Step title="Open the keybinding editor">
+    Press `Cmd+Shift+P` / `Ctrl+Shift+P` to open the command palette, then search for **Preferences: Open Keyboard Shortcuts**.
+  </Step>
+  <Step title="Find the command to remap">
+    Type the command name or existing shortcut in the search box.
+  </Step>
+  <Step title="Set a new keybinding">
+    Click the pencil icon next to any command and press your desired key combination.
+  </Step>
+  <Step title="Edit keybindings.json directly">
+    Click the **Open Keyboard Shortcuts (JSON)** icon in the top-right of the keybinding editor to edit `keybindings.json` directly for finer control.
+  </Step>
+</Steps>
+
+## Vim mode keybindings
+
+When Vim mode is enabled, `VimEngine.ts` intercepts key input and provides full modal editing.
+
+<Tabs>
+  <Tab title="Enabling Vim mode">
+    Open **Settings** (`Cmd+,` / `Ctrl+,`), search for `opencursor.vim.enable`, and set it to `true`. Alternatively, install the `opencursor-vim` extension and reload the window.
+  </Tab>
+  <Tab title="Normal mode shortcuts">
+
+| Key | Action |
+|---|---|
+| `h` / `j` / `k` / `l` | Move left / down / up / right |
+| `w` / `b` | Word forward / backward |
+| `gg` / `G` | Go to first / last line |
+| `dd` | Delete line |
+| `yy` | Yank (copy) line |
+| `p` | Paste |
+| `u` | Undo |
+| `Ctrl+R` | Redo |
+| `/` | Start search |
+| `:` | Open command line |
+
+  </Tab>
+  <Tab title="Insert mode">
+
+Enter insert mode with `i`, `a`, `o`, or `O`. Press `Escape` to return to normal mode. All standard OpenCursor shortcuts remain available while in insert mode.
+
+  </Tab>
+</Tabs>
+
+<Tip>
+  If you are migrating from Sublime Text, install the Sublime keybindings extension from the Extensions panel. The `product.json` includes `ms-vscode.sublime-keybindings` as a keymap tip for users with Sublime Text projects.
+</Tip>
